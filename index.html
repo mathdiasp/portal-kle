@@ -475,15 +475,50 @@ var BASE = null;
 var BASE_CARREGADA = false;
 var BASE_ERRO = false;
 
-var BASE_URL = 'base.json';
+function excelDataParaString(serial) {
+  if (!serial || isNaN(serial)) return serial || '';
+  var d = new Date(Math.round((serial - 25569) * 86400 * 1000));
+  var dd = d.getUTCDate().toString().padStart(2,'0');
+  var mm = (d.getUTCMonth()+1).toString().padStart(2,'0');
+  return dd + '/' + mm + '/' + d.getUTCFullYear();
+}
 
-fetch(BASE_URL + '?t=' + Date.now())
+function formatarValor(v) {
+  if (!v && v !== 0) return '';
+  var n = parseFloat(v);
+  if (isNaN(n)) return String(v);
+  return 'R$ ' + n.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+
+function processarLinhas(linhas) {
+  var base = {};
+  linhas.forEach(function(item) {
+    var v = item.values || item;
+    var cnpj = String(v['0'] || '').replace(/\D/g,'');
+    if (!cnpj || cnpj.length < 14) return;
+    if (!base[cnpj]) {
+      base[cnpj] = { empresa: String(v['1'] || ''), pedidos: [] };
+    }
+    base[cnpj].pedidos.push({
+      pedido:    String(v['3'] || ''),
+      entrega:   excelDataParaString(v['5']),
+      valor:     formatarValor(v['6']),
+      nf:        String(v['10'] || ''),
+      valorNF:   formatarValor(v['12']),
+      urlBoleto: v['7'] || '',
+      urlNF:     v['13'] || ''
+    });
+  });
+  return base;
+}
+
+fetch('base.json?t=' + Date.now())
   .then(function(r) {
     if (!r.ok) throw new Error('HTTP ' + r.status);
     return r.json();
   })
   .then(function(data) {
-    BASE = data;
+    BASE = processarLinhas(data);
     BASE_CARREGADA = true;
   })
   .catch(function() {
