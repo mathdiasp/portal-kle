@@ -493,20 +493,19 @@ function formatarValor(v) {
 function processarLinhas(linhas) {
   var base = {};
   linhas.forEach(function(item) {
-    var v = item.values || item;
-    var cnpj = String(v['0'] || '').replace(/\D/g,'');
+    var cnpj = String(item.cnpj || '').replace(/\D/g,'');
     if (!cnpj || cnpj.length < 14) return;
     if (!base[cnpj]) {
-      base[cnpj] = { empresa: String(v['1'] || ''), pedidos: [] };
+      base[cnpj] = { empresa: String(item.empresa || ''), pedidos: [] };
     }
     base[cnpj].pedidos.push({
-      pedido:    String(v['3'] || ''),
-      entrega:   excelDataParaString(v['5']),
-      valor:     formatarValor(v['6']),
-      nf:        String(v['10'] || ''),
-      valorNF:   formatarValor(v['12']),
-      urlBoleto: v['7'] || '',
-      urlNF:     v['13'] || ''
+      pedido:    String(item.pedido || ''),
+      entrega:   excelDataParaString(item.vencimento),
+      valor:     formatarValor(item.valor),
+      nf:        String(item.nf || ''),
+      valorNF:   formatarValor(item.valorNF),
+      urlBoleto: item.urlBoleto || '',
+      urlNF:     item.urlNF || ''
     });
   });
   return base;
@@ -566,7 +565,7 @@ function buscarCNPJ() {
     var dados = BASE[cnpj];
 
     if (!dados || !dados.pedidos || dados.pedidos.length === 0) {
-      showAlert('Nenhum documento encontrado para este CNPJ. Verifique o CNPJ informado ou entre em contato com o financeiro KLE.', 'err');
+      showAlert('Nenhum documento encontrado para este CNPJ. Verifique o CNPJ informado ou <a href="https://wa.me/5511919608501?text=Olá,%20preciso%20de%20ajuda%20para%20acessar%20meus%20documentos%20no%20portal%20KLE." target="_blank" style="color:inherit;font-weight:600;text-decoration:underline;">fale com o financeiro KLE pelo WhatsApp</a>.', 'err');
       return;
     }
 
@@ -653,7 +652,7 @@ function setLoading(on) {
 
 function showAlert(msg, type) {
   var el = document.getElementById('alert');
-  el.textContent = msg;
+  el.innerHTML = msg;
   el.className = 'alert ' + type;
   el.style.display = msg ? 'block' : 'none';
 }
