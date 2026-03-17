@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -467,32 +468,28 @@
 
 <script>
 // ============================================================
-// BASE DE DADOS
-// Substituir pelo JSON carregado do OneDrive via Make
-// Estrutura: { "CNPJ_SEM_MASCARA": [ { pedido, entrega, valor, nf, urlBoleto, urlNF }, ... ] }
+// BASE DE DADOS — carregada dinamicamente do base.json (GitHub Pages)
+// Atualizada diariamente pelo Make às 04:00
 // ============================================================
-var BASE = {
-  "61810677000180": {
-    empresa: "Assoc. dos Cabos e Soldados da PM do Est. de SP",
-    pedidos: [
-      { pedido: "108085", entrega: "13/03/2026", valor: "R$ 5.350,00", nf: "108085", urlBoleto: "", urlNF: "" },
-      { pedido: "107900", entrega: "05/03/2026", valor: "R$ 4.200,00", nf: "107900", urlBoleto: "", urlNF: "" }
-    ]
-  },
-  "47155853000166": {
-    empresa: "Associacao Dona Anita",
-    pedidos: [
-      { pedido: "1761", entrega: "17/03/2026", valor: "R$ 645,90", nf: "108090", urlBoleto: "", urlNF: "" }
-    ]
-  },
-  "61365805000123": {
-    empresa: "Colegio Dante Alighieri",
-    pedidos: [
-      { pedido: "1767", entrega: "14/03/2026", valor: "R$ 335,84", nf: "108091", urlBoleto: "", urlNF: "" },
-      { pedido: "1740", entrega: "28/02/2026", valor: "R$ 335,84", nf: "108060", urlBoleto: "https://exemplo.com/boleto_1740.pdf", urlNF: "https://exemplo.com/nf_108060.pdf" }
-    ]
-  }
-};
+var BASE = null;
+var BASE_CARREGADA = false;
+var BASE_ERRO = false;
+
+var BASE_URL = 'base.json';
+
+fetch(BASE_URL + '?t=' + Date.now())
+  .then(function(r) {
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
+  })
+  .then(function(data) {
+    BASE = data;
+    BASE_CARREGADA = true;
+  })
+  .catch(function() {
+    BASE_ERRO = true;
+    BASE_CARREGADA = true;
+  });
 
 function formatarCNPJ(v) {
   v = v.replace(/\D/g, '').slice(0, 14);
@@ -518,9 +515,20 @@ function buscarCNPJ() {
   setLoading(true);
   showAlert('', '');
 
-  setTimeout(function() {
-    var dados = BASE[cnpj];
+  function executarBusca() {
+    if (!BASE_CARREGADA) {
+      setTimeout(executarBusca, 200);
+      return;
+    }
+
     setLoading(false);
+
+    if (BASE_ERRO) {
+      showAlert('Erro ao carregar a base de documentos. Tente novamente em instantes ou entre em contato com o financeiro KLE.', 'err');
+      return;
+    }
+
+    var dados = BASE[cnpj];
 
     if (!dados || !dados.pedidos || dados.pedidos.length === 0) {
       showAlert('Nenhum documento encontrado para este CNPJ. Verifique o CNPJ informado ou entre em contato com o financeiro KLE.', 'err');
@@ -580,7 +588,9 @@ function buscarCNPJ() {
 
     document.getElementById('form-section').style.display = 'none';
     document.getElementById('result').style.display = 'block';
-  }, 800);
+  }
+
+  executarBusca();
 }
 
 function togglePedido(idx) {
