@@ -493,7 +493,7 @@ function formatarValor(v) {
 function processarLinhas(linhas) {
   var base = {};
   linhas.forEach(function(item) {
-    var cnpj = String(item.cnpj || '').replace(/\D/g,'');
+    var cnpj = String(item.cnpj || '').replace(/\D/g,'').padStart(14, '0');
     if (!cnpj || cnpj.length < 14) return;
     if (!base[cnpj]) {
       base[cnpj] = { empresa: String(item.empresa || ''), pedidos: [] };
