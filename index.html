@@ -514,9 +514,16 @@ function processarLinhas(linhas) {
 fetch('base.json?t=' + Date.now())
   .then(function(r) {
     if (!r.ok) throw new Error('HTTP ' + r.status);
-    return r.json();
+    return r.text();
   })
-  .then(function(data) {
+  .then(function(text) {
+    // Limpa JSON malformado: adiciona colchetes se necessário e remove vírgula final
+    var t = text.trim();
+    if (!t.startsWith('[')) t = '[' + t;
+    if (!t.endsWith(']')) {
+      t = t.replace(/,\s*$/, '') + ']';
+    }
+    var data = JSON.parse(t);
     BASE = processarLinhas(data);
     BASE_CARREGADA = true;
   })
