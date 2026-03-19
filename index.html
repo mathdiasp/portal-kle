@@ -213,7 +213,6 @@
   .alert.ok { background: var(--success-bg); color: var(--success); border: 1px solid #a7d9bc; }
   .alert.err { background: var(--error-bg); color: var(--error); border: 1px solid #fca5a5; }
 
-  /* Result */
   .result { display: none; animation: fadeUp 0.3s ease both; }
 
   .result-header {
@@ -254,7 +253,6 @@
     margin-top: 8px;
   }
 
-  /* Pedido item */
   .pedido-item {
     border: 1.5px solid var(--cream-dark);
     border-radius: var(--radius);
@@ -288,8 +286,6 @@
     border-radius: 6px;
     letter-spacing: 0.5px;
   }
-
-  .pedido-meta { }
 
   .pedido-data {
     font-size: 13px;
@@ -429,7 +425,6 @@
 
   <div class="card">
 
-    <!-- Formulario -->
     <div id="form-section">
       <div class="card-title">Consulta de documentos</div>
       <div class="field">
@@ -446,7 +441,6 @@
       <div class="alert" id="alert"></div>
     </div>
 
-    <!-- Resultado -->
     <div class="result" id="result">
       <div class="card-title">Documentos encontrados</div>
       <div class="result-header">
@@ -467,25 +461,49 @@
 </div>
 
 <script>
-// ============================================================
-// BASE DE DADOS — carregada dinamicamente do base.json (GitHub Pages)
-// Atualizada diariamente pelo Make às 04:00
-// ============================================================
 var BASE = null;
 var BASE_CARREGADA = false;
 var BASE_ERRO = false;
 
-function excelDataParaString(serial) {
-  if (!serial || isNaN(serial)) return serial || '';
-  var d = new Date(Math.round((serial - 25569) * 86400 * 1000));
-  var dd = d.getUTCDate().toString().padStart(2,'0');
-  var mm = (d.getUTCMonth()+1).toString().padStart(2,'0');
-  return dd + '/' + mm + '/' + d.getUTCFullYear();
+// Converte serial do Excel OU string de data para DD/MM/YYYY
+function excelDataParaString(valor) {
+  if (!valor && valor !== 0) return '';
+
+  // Tenta converter como serial numérico (número ou string numérica)
+  var serial = parseFloat(valor);
+  if (!isNaN(serial) && serial > 40000 && serial < 60000) {
+    var d = new Date(Math.round((serial - 25569) * 86400 * 1000));
+    var dd = d.getUTCDate().toString().padStart(2, '0');
+    var mm = (d.getUTCMonth() + 1).toString().padStart(2, '0');
+    return dd + '/' + mm + '/' + d.getUTCFullYear();
+  }
+
+  // Se já é string no formato DD/MM/YYYY, retorna direto
+  if (/^\d{2}\/\d{2}\/\d{4}$/.test(String(valor))) {
+    return String(valor);
+  }
+
+  // Se é string no formato YYYY-MM-DD (ISO), converte
+  if (/^\d{4}-\d{2}-\d{2}/.test(String(valor))) {
+    var parts = String(valor).substring(0, 10).split('-');
+    return parts[2] + '/' + parts[1] + '/' + parts[0];
+  }
+
+  // Formato MM/DD/YYYY (americano) — converte para DD/MM/YYYY
+  if (/^\d{2}\/\d{2}\/\d{4}$/.test(String(valor))) {
+    var p = String(valor).split('/');
+    // Heurística: se primeiro número > 12, é dia (já está DD/MM)
+    if (parseInt(p[0]) > 12) return valor;
+    // Caso contrário, assume MM/DD/YYYY e inverte
+    return p[1] + '/' + p[0] + '/' + p[2];
+  }
+
+  return String(valor);
 }
 
 function formatarValor(v) {
   if (!v && v !== 0) return '';
-  var n = parseFloat(v);
+  var n = parseFloat(String(v).replace(',', '.'));
   if (isNaN(n)) return String(v);
   return 'R$ ' + n.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 }
@@ -493,7 +511,7 @@ function formatarValor(v) {
 function processarLinhas(linhas) {
   var base = {};
   linhas.forEach(function(item) {
-    var cnpj = String(item.cnpj || '').replace(/\D/g,'').padStart(14, '0');
+    var cnpj = String(item.cnpj || '').replace(/\D/g, '').padStart(14, '0');
     if (!cnpj || cnpj.length < 14) return;
     if (!base[cnpj]) {
       base[cnpj] = { empresa: String(item.empresa || ''), pedidos: [] };
@@ -517,7 +535,6 @@ fetch('base.json?t=' + Date.now())
     return r.text();
   })
   .then(function(text) {
-    // Limpa JSON malformado: adiciona colchetes se necessário e remove vírgula final
     var t = text.trim();
     if (!t.startsWith('[')) t = '[' + t;
     if (!t.endsWith(']')) {
@@ -557,11 +574,7 @@ function buscarCNPJ() {
   showAlert('', '');
 
   function executarBusca() {
-    if (!BASE_CARREGADA) {
-      setTimeout(executarBusca, 200);
-      return;
-    }
-
+    if (!BASE_CARREGADA) { setTimeout(executarBusca, 200); return; }
     setLoading(false);
 
     if (BASE_ERRO) {
@@ -570,7 +583,6 @@ function buscarCNPJ() {
     }
 
     var dados = BASE[cnpj];
-
     if (!dados || !dados.pedidos || dados.pedidos.length === 0) {
       showAlert('Nenhum documento encontrado para este CNPJ. Verifique o CNPJ informado ou <a href="https://wa.me/5511919608501?text=Olá,%20preciso%20de%20ajuda%20para%20acessar%20meus%20documentos%20no%20portal%20KLE." target="_blank" style="color:inherit;font-weight:600;text-decoration:underline;">fale com o financeiro KLE pelo WhatsApp</a>.', 'err');
       return;
@@ -590,12 +602,14 @@ function buscarCNPJ() {
       var temBoleto = !!p.urlBoleto;
       var temNF = !!p.urlNF;
 
+      var entregaLabel = p.entrega ? 'Vencimento: ' + p.entrega : '';
+
       item.innerHTML =
         '<div class="pedido-header" onclick="togglePedido(' + idx + ')">' +
           '<div class="pedido-info">' +
             '<span class="pedido-num">Pedido #' + p.pedido + '</span>' +
-            '<div class="pedido-meta">' +
-              '<div class="pedido-data">Entrega: ' + p.entrega + '</div>' +
+            '<div>' +
+              '<div class="pedido-data">' + entregaLabel + '</div>' +
               '<div class="pedido-valor">' + p.valor + '</div>' +
             '</div>' +
           '</div>' +
