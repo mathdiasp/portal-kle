@@ -4,679 +4,386 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Portal de Documentos — KLE</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>KLE — Acesso Financeiro</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  :root {
-    --navy: #0f2336;
-    --navy-mid: #1B4F72;
-    --navy-light: #2874a6;
-    --cream: #f7f4ef;
-    --cream-dark: #ede9e1;
-    --gold: #c8992a;
-    --text: #1a1a1a;
-    --text-muted: #6b6b6b;
-    --white: #ffffff;
-    --success: #1e7e4a;
-    --success-bg: #edf7f1;
-    --error: #b91c1c;
-    --error-bg: #fef2f2;
-    --radius: 12px;
-    --shadow-lg: 0 12px 48px rgba(15,35,54,0.16);
-  }
+:root {
+  --navy: #0B1F30;
+  --gold: #C8992A;
+  --cream: #F5F1EA;
+  --white: #FFFFFF;
+  --border: #DDD8CF;
+  --muted: #6B7A8A;
+  --red: #B91C1C;
+  --red-bg: #FEF2F2;
+}
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--cream);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 0;
-    position: relative;
-    overflow-x: hidden;
-  }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--navy);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
 
-  body::before {
-    content: '';
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    height: 420px;
-    background: var(--navy);
-    clip-path: ellipse(120% 100% at 50% 0%);
-    z-index: 0;
-  }
+/* Background pattern */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(200,153,42,0.06) 1px, transparent 1px);
+  background-size: 32px 32px;
+  z-index: 0;
+}
 
-  body::after {
-    content: '';
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    height: 420px;
-    background-image: radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px);
-    background-size: 28px 28px;
-    z-index: 0;
-  }
+body::after {
+  content: '';
+  position: fixed;
+  bottom: -200px; right: -200px;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(200,153,42,0.08) 0%, transparent 70%);
+  z-index: 0;
+}
 
-  .wrapper {
-    position: relative;
-    z-index: 1;
-    width: 100%;
-    max-width: 560px;
-    padding: 2.5rem 1.5rem 4rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
+.login-wrap {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 420px;
+  padding: 0 24px;
+}
 
-  .header {
-    text-align: center;
-    margin-bottom: 2rem;
-    animation: fadeDown 0.5s ease both;
-  }
+.login-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 20px;
+  padding: 40px 36px;
+  backdrop-filter: blur(12px);
+}
 
-  .logo-wrap {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 1.5rem;
-  }
+.logo-area {
+  text-align: center;
+  margin-bottom: 36px;
+}
 
-  .logo-mark {
-    background: var(--gold);
-    color: var(--navy);
-    font-family: 'DM Serif Display', serif;
-    font-size: 14px;
-    padding: 6px 14px;
-    border-radius: 6px;
-    letter-spacing: 1px;
-  }
+.logo-badge {
+  display: inline-block;
+  background: var(--gold);
+  color: var(--navy);
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 15px;
+  padding: 7px 18px;
+  border-radius: 8px;
+  letter-spacing: 1px;
+  margin-bottom: 14px;
+}
 
-  .logo-name {
-    color: var(--white);
-    font-size: 13px;
-    font-weight: 300;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    opacity: 0.7;
-  }
+.logo-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 4px;
+}
 
-  .header h1 {
-    font-family: 'DM Serif Display', serif;
-    color: var(--white);
-    font-size: 2rem;
-    font-weight: 400;
-    line-height: 1.2;
-    margin-bottom: 0.5rem;
-  }
+.logo-sub {
+  font-size: 13px;
+  color: rgba(255,255,255,0.35);
+  letter-spacing: 1px;
+}
 
-  .header p {
-    color: rgba(255,255,255,0.55);
-    font-size: 14px;
-    font-weight: 300;
-  }
+.field {
+  margin-bottom: 16px;
+}
 
-  .card {
-    background: var(--white);
-    border-radius: 20px;
-    padding: 2rem;
-    width: 100%;
-    box-shadow: var(--shadow-lg);
-    animation: fadeUp 0.5s 0.1s ease both;
-  }
+label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.45);
+  margin-bottom: 8px;
+}
 
-  .card-title {
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 1.2px;
-    text-transform: uppercase;
-    color: var(--navy-mid);
-    margin-bottom: 1.5rem;
-    padding-bottom: 1rem;
-    border-bottom: 1.5px solid var(--cream-dark);
-  }
+.input-wrap {
+  position: relative;
+}
 
-  .field { margin-bottom: 1.25rem; }
+input[type="password"],
+input[type="text"] {
+  width: 100%;
+  padding: 13px 44px 13px 16px;
+  background: rgba(255,255,255,0.07);
+  border: 1.5px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  color: white;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+  letter-spacing: 2px;
+}
 
-  label {
-    display: block;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--text-muted);
-    letter-spacing: 0.8px;
-    text-transform: uppercase;
-    margin-bottom: 6px;
-  }
+input[type="password"]:focus,
+input[type="text"]:focus {
+  border-color: var(--gold);
+  background: rgba(255,255,255,0.10);
+}
 
-  input {
-    width: 100%;
-    padding: 13px 16px;
-    border: 1.5px solid var(--cream-dark);
-    border-radius: var(--radius);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px;
-    color: var(--text);
-    background: var(--cream);
-    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
-    outline: none;
-  }
+input::placeholder {
+  color: rgba(255,255,255,0.2);
+  letter-spacing: 0;
+}
 
-  input:focus {
-    border-color: var(--navy-mid);
-    background: var(--white);
-    box-shadow: 0 0 0 3px rgba(27,79,114,0.08);
-  }
+.toggle-pw {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 16px;
+  opacity: 0.4;
+  transition: opacity 0.2s;
+  user-select: none;
+}
+.toggle-pw:hover { opacity: 0.8; }
 
-  input::placeholder { color: #bbb; }
+.btn-login {
+  width: 100%;
+  padding: 14px;
+  background: var(--gold);
+  color: var(--navy);
+  border: none;
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 8px;
+  letter-spacing: 0.3px;
+}
 
-  .field-hint { font-size: 11px; color: #aaa; margin-top: 5px; }
+.btn-login:hover { background: #E8B84B; transform: translateY(-1px); }
+.btn-login:active { transform: translateY(0); }
+.btn-login:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
-  .btn {
-    width: 100%;
-    padding: 14px;
-    background: var(--navy);
-    color: var(--white);
-    border: none;
-    border-radius: var(--radius);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.1s;
-    margin-top: 0.5rem;
-  }
+.error-msg {
+  display: none;
+  background: var(--red-bg);
+  border: 1px solid rgba(185,28,28,0.25);
+  color: var(--red);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  text-align: center;
+}
 
-  .btn:hover { background: var(--navy-mid); }
-  .btn:active { transform: scale(0.99); }
-  .btn:disabled { background: #c0c0c0; cursor: not-allowed; }
+.error-msg.show { display: block; }
 
-  .btn-inner { display: flex; align-items: center; justify-content: center; gap: 8px; }
+.attempts-msg {
+  text-align: center;
+  font-size: 11.5px;
+  color: rgba(255,255,255,0.25);
+  margin-top: 16px;
+}
 
-  .spinner {
-    width: 16px; height: 16px;
-    border: 2px solid rgba(255,255,255,0.3);
-    border-top-color: #fff;
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-    display: none;
-  }
+.lock-screen {
+  display: none;
+  text-align: center;
+  padding: 20px 0;
+}
 
-  .alert {
-    border-radius: var(--radius);
-    padding: 12px 14px;
-    font-size: 13px;
-    margin-top: 1rem;
-    display: none;
-    line-height: 1.5;
-  }
-  .alert.ok { background: var(--success-bg); color: var(--success); border: 1px solid #a7d9bc; }
-  .alert.err { background: var(--error-bg); color: var(--error); border: 1px solid #fca5a5; }
+.lock-icon { font-size: 40px; margin-bottom: 12px; }
+.lock-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--red);
+  margin-bottom: 6px;
+}
+.lock-sub { font-size: 13px; color: rgba(255,255,255,0.35); }
+.lock-countdown {
+  font-size: 28px;
+  font-weight: 700;
+  color: white;
+  margin: 16px 0;
+  font-family: 'Syne', sans-serif;
+}
 
-  .result { display: none; animation: fadeUp 0.3s ease both; }
-
-  .result-header {
-    padding-bottom: 1rem;
-    margin-bottom: 1rem;
-    border-bottom: 1.5px solid var(--cream-dark);
-  }
-
-  .result-label {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.8px;
-    text-transform: uppercase;
-    color: var(--navy-mid);
-    margin-bottom: 3px;
-  }
-
-  .result-empresa {
-    font-size: 16px;
-    font-weight: 500;
-    color: var(--text);
-  }
-
-  .result-cnpj {
-    font-size: 12px;
-    color: var(--text-muted);
-    margin-top: 2px;
-  }
-
-  .result-count {
-    display: inline-block;
-    background: var(--cream);
-    border-radius: 20px;
-    padding: 3px 10px;
-    font-size: 12px;
-    color: var(--navy-mid);
-    font-weight: 500;
-    margin-top: 8px;
-  }
-
-  .pedido-item {
-    border: 1.5px solid var(--cream-dark);
-    border-radius: var(--radius);
-    margin-bottom: 10px;
-    overflow: hidden;
-    transition: border-color 0.2s;
-  }
-
-  .pedido-item:hover { border-color: #b0c8dd; }
-
-  .pedido-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 14px 16px;
-    background: var(--cream);
-    cursor: pointer;
-    user-select: none;
-  }
-
-  .pedido-header:hover { background: #ede9e1; }
-
-  .pedido-info { display: flex; align-items: center; gap: 12px; }
-
-  .pedido-num {
-    background: var(--navy);
-    color: var(--white);
-    font-size: 11px;
-    font-weight: 600;
-    padding: 4px 10px;
-    border-radius: 6px;
-    letter-spacing: 0.5px;
-  }
-
-  .pedido-data {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text);
-  }
-
-  .pedido-valor {
-    font-size: 12px;
-    color: var(--text-muted);
-    margin-top: 1px;
-  }
-
-  .pedido-chevron {
-    color: var(--navy-mid);
-    font-size: 18px;
-    transition: transform 0.2s;
-    line-height: 1;
-  }
-
-  .pedido-chevron.open { transform: rotate(180deg); }
-
-  .pedido-docs {
-    display: none;
-    padding: 12px 16px;
-    border-top: 1px solid var(--cream-dark);
-    background: var(--white);
-    gap: 8px;
-    flex-direction: column;
-  }
-
-  .pedido-docs.open { display: flex; }
-
-  .doc-btn {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 14px;
-    border-radius: 10px;
-    border: 1.5px solid var(--cream-dark);
-    text-decoration: none;
-    transition: border-color 0.2s, background 0.2s;
-    cursor: pointer;
-  }
-
-  .doc-btn:hover { border-color: var(--navy-mid); background: #f0f6fb; }
-
-  .doc-btn.disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-    pointer-events: none;
-  }
-
-  .doc-btn-left { display: flex; align-items: center; gap: 10px; }
-
-  .doc-ico {
-    width: 32px; height: 32px;
-    border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 14px;
-    flex-shrink: 0;
-  }
-
-  .doc-ico.boleto { background: #fff3cd; }
-  .doc-ico.nf { background: #d4edda; }
-
-  .doc-btn-name { font-size: 13px; font-weight: 500; color: var(--text); }
-  .doc-btn-sub { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
-
-  .doc-badge {
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 0.4px;
-    text-transform: uppercase;
-    padding: 3px 8px;
-    border-radius: 20px;
-  }
-
-  .badge-ok { background: #d4edda; color: #1e7e4a; }
-  .badge-no { background: #e9ecef; color: #888; }
-
-  .btn-nova {
-    width: 100%;
-    padding: 11px;
-    background: transparent;
-    color: var(--navy-mid);
-    border: 1.5px solid var(--cream-dark);
-    border-radius: var(--radius);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    margin-top: 1rem;
-    transition: border-color 0.2s, background 0.2s;
-  }
-
-  .btn-nova:hover { border-color: var(--navy-mid); background: var(--cream); }
-
-  .footer {
-    margin-top: 2rem;
-    text-align: center;
-    font-size: 12px;
-    color: rgba(255,255,255,0.3);
-    animation: fadeUp 0.5s 0.3s ease both;
-  }
-
-  @keyframes fadeDown {
-    from { opacity: 0; transform: translateY(-16px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(16px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  @media (max-width: 560px) {
-    .wrapper { padding: 2rem 1rem 3rem; }
-    .card { padding: 1.5rem; }
-    .header h1 { font-size: 1.6rem; }
-  }
+.footer-note {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 11.5px;
+  color: rgba(255,255,255,0.18);
+}
 </style>
 </head>
 <body>
-<div class="wrapper">
 
-  <div class="header">
-    <div class="logo-wrap">
-      <span class="logo-mark">KLE</span>
-      <span class="logo-name">Kit Lanche Express</span>
+<div class="login-wrap">
+  <div class="login-card">
+
+    <div class="logo-area">
+      <div class="logo-badge">KLE</div>
+      <div class="logo-title">Painel Financeiro</div>
+      <div class="logo-sub">ACESSO RESTRITO · EQUIPE INTERNA</div>
     </div>
-    <h1>Portal de Documentos</h1>
-    <p>Acesse seus boletos e notas fiscais</p>
-  </div>
 
-  <div class="card">
+    <!-- Login form -->
+    <div id="login-form">
+      <div class="error-msg" id="error-msg">Senha incorreta. Tente novamente.</div>
 
-    <div id="form-section">
-      <div class="card-title">Consulta de documentos</div>
       <div class="field">
-        <label for="cnpj">CNPJ da empresa</label>
-        <input type="text" id="cnpj" placeholder="00.000.000/0001-00" maxlength="18" autocomplete="off">
-        <div class="field-hint">Informe o CNPJ cadastrado no pedido</div>
-      </div>
-      <button class="btn" id="btn-buscar" onclick="buscarCNPJ()">
-        <div class="btn-inner">
-          <div class="spinner" id="spinner"></div>
-          <span id="btn-text">Consultar documentos</span>
+        <label>Senha de acesso</label>
+        <div class="input-wrap">
+          <input type="password" id="pw-input" placeholder="••••••••" autocomplete="current-password"
+            onkeydown="if(event.key==='Enter')tryLogin()">
+          <span class="toggle-pw" id="toggle-pw" onclick="togglePw()">👁</span>
         </div>
+      </div>
+
+      <button class="btn-login" id="btn-login" onclick="tryLogin()">
+        Entrar no Painel
       </button>
-      <div class="alert" id="alert"></div>
+
+      <div class="attempts-msg" id="attempts-msg"></div>
     </div>
 
-    <div class="result" id="result">
-      <div class="card-title">Documentos encontrados</div>
-      <div class="result-header">
-        <div class="result-label">Empresa</div>
-        <div class="result-empresa" id="res-empresa"></div>
-        <div class="result-cnpj" id="res-cnpj"></div>
-        <span class="result-count" id="res-count"></span>
-      </div>
-
-      <div id="pedidos-list"></div>
-
-      <button class="btn-nova" onclick="novaBusca()">Fazer nova consulta</button>
+    <!-- Lockout screen -->
+    <div class="lock-screen" id="lock-screen">
+      <div class="lock-icon">🔒</div>
+      <div class="lock-title">Acesso Bloqueado</div>
+      <div class="lock-sub">Muitas tentativas incorretas. Aguarde:</div>
+      <div class="lock-countdown" id="countdown">05:00</div>
+      <div class="lock-sub">O acesso será liberado automaticamente.</div>
     </div>
 
   </div>
-
-  <div class="footer">KLE &middot; Uso exclusivo para clientes &middot; Documentos gerados pelo Maxiprod</div>
+  <div class="footer-note">portal.grupokle.com.br · uso interno KLE</div>
 </div>
 
 <script>
-var BASE = null;
-var BASE_CARREGADA = false;
-var BASE_ERRO = false;
+// Hash SHA-256 da senha KLE@2026
+const HASH_CORRETO = 'e5cb7c2c38e9811c66c3fc46aca5e529fa43401a34905ea19ec97561d0685146';
+const MAX_TENTATIVAS = 5;
+const LOCKOUT_SEGUNDOS = 300; // 5 minutos
+const STORAGE_KEY = 'kle_auth';
+const LOCKOUT_KEY = 'kle_lockout';
 
-// Converte serial do Excel OU string de data para DD/MM/YYYY
-function excelDataParaString(valor) {
-  if (!valor && valor !== 0) return '';
+let tentativas = parseInt(sessionStorage.getItem('kle_tentativas') || '0');
 
-  // Tenta converter como serial numérico (número ou string numérica)
-  var serial = parseFloat(valor);
-  if (!isNaN(serial) && serial > 40000 && serial < 60000) {
-    var d = new Date(Math.round((serial - 25569) * 86400 * 1000));
-    var dd = d.getUTCDate().toString().padStart(2, '0');
-    var mm = (d.getUTCMonth() + 1).toString().padStart(2, '0');
-    return dd + '/' + mm + '/' + d.getUTCFullYear();
-  }
-
-  // Se já é string no formato DD/MM/YYYY, retorna direto
-  if (/^\d{2}\/\d{2}\/\d{4}$/.test(String(valor))) {
-    return String(valor);
-  }
-
-  // Se é string no formato YYYY-MM-DD (ISO), converte
-  if (/^\d{4}-\d{2}-\d{2}/.test(String(valor))) {
-    var parts = String(valor).substring(0, 10).split('-');
-    return parts[2] + '/' + parts[1] + '/' + parts[0];
-  }
-
-  // Formato MM/DD/YYYY (americano) — converte para DD/MM/YYYY
-  if (/^\d{2}\/\d{2}\/\d{4}$/.test(String(valor))) {
-    var p = String(valor).split('/');
-    // Heurística: se primeiro número > 12, é dia (já está DD/MM)
-    if (parseInt(p[0]) > 12) return valor;
-    // Caso contrário, assume MM/DD/YYYY e inverte
-    return p[1] + '/' + p[0] + '/' + p[2];
-  }
-
-  return String(valor);
+// Verifica se já está autenticado
+if (sessionStorage.getItem(STORAGE_KEY) === 'ok') {
+  window.location.href = 'painel.html';
 }
 
-function formatarValor(v) {
-  if (!v && v !== 0) return '';
-  var n = parseFloat(String(v).replace(',', '.'));
-  if (isNaN(n)) return String(v);
-  return 'R$ ' + n.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+// Verifica lockout
+function checkLockout() {
+  const lockUntil = parseInt(localStorage.getItem(LOCKOUT_KEY) || '0');
+  const agora = Date.now();
+  if (lockUntil > agora) {
+    showLockout(Math.ceil((lockUntil - agora) / 1000));
+    return true;
+  }
+  return false;
 }
 
-function processarLinhas(linhas) {
-  var base = {};
-  linhas.forEach(function(item) {
-    var cnpj = String(item.cnpj || '').replace(/\D/g, '').padStart(14, '0');
-    if (!cnpj || cnpj.length < 14) return;
-    if (!base[cnpj]) {
-      base[cnpj] = { empresa: String(item.empresa || ''), pedidos: [] };
+function showLockout(segundosRestantes) {
+  document.getElementById('login-form').style.display = 'none';
+  document.getElementById('lock-screen').style.display = 'block';
+  let s = segundosRestantes;
+  const interval = setInterval(() => {
+    s--;
+    const min = Math.floor(s / 60).toString().padStart(2, '0');
+    const sec = (s % 60).toString().padStart(2, '0');
+    document.getElementById('countdown').textContent = `${min}:${sec}`;
+    if (s <= 0) {
+      clearInterval(interval);
+      localStorage.removeItem(LOCKOUT_KEY);
+      sessionStorage.setItem('kle_tentativas', '0');
+      tentativas = 0;
+      document.getElementById('lock-screen').style.display = 'none';
+      document.getElementById('login-form').style.display = 'block';
     }
-    base[cnpj].pedidos.push({
-      pedido:    String(item.pedido || ''),
-      entrega:   excelDataParaString(item.vencimento),
-      valor:     formatarValor(item.valor),
-      nf:        String(item.nf || ''),
-      valorNF:   formatarValor(item.valorNF),
-      urlBoleto: item.urlBoleto || '',
-      urlNF:     item.urlNF || ''
-    });
-  });
-  return base;
+  }, 1000);
+  // Contador inicial
+  const min = Math.floor(s / 60).toString().padStart(2, '0');
+  const sec = (s % 60).toString().padStart(2, '0');
+  document.getElementById('countdown').textContent = `${min}:${sec}`;
 }
 
-fetch('base.json?t=' + Date.now())
-  .then(function(r) {
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    return r.text();
-  })
-  .then(function(text) {
-    var t = text.trim();
-    if (!t.startsWith('[')) t = '[' + t;
-    if (!t.endsWith(']')) {
-      t = t.replace(/,\s*$/, '') + ']';
-    }
-    var data = JSON.parse(t);
-    BASE = processarLinhas(data);
-    BASE_CARREGADA = true;
-  })
-  .catch(function() {
-    BASE_ERRO = true;
-    BASE_CARREGADA = true;
-  });
-
-function formatarCNPJ(v) {
-  v = v.replace(/\D/g, '').slice(0, 14);
-  if (v.length <= 2) return v;
-  if (v.length <= 5) return v.slice(0,2) + '.' + v.slice(2);
-  if (v.length <= 8) return v.slice(0,2) + '.' + v.slice(2,5) + '.' + v.slice(5);
-  if (v.length <= 12) return v.slice(0,2) + '.' + v.slice(2,5) + '.' + v.slice(5,8) + '/' + v.slice(8);
-  return v.slice(0,2) + '.' + v.slice(2,5) + '.' + v.slice(5,8) + '/' + v.slice(8,12) + '-' + v.slice(12);
+async function sha256(msg) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(msg));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
-document.getElementById('cnpj').addEventListener('input', function() {
-  this.value = formatarCNPJ(this.value);
-});
+async function tryLogin() {
+  if (checkLockout()) return;
 
-document.getElementById('cnpj').addEventListener('keydown', function(e) {
-  if (e.key === 'Enter') buscarCNPJ();
-});
+  const pw = document.getElementById('pw-input').value;
+  if (!pw) return;
 
-function buscarCNPJ() {
-  var cnpj = document.getElementById('cnpj').value.replace(/\D/g, '');
-  if (cnpj.length !== 14) { showAlert('Informe um CNPJ valido com 14 digitos.', 'err'); return; }
+  const btn = document.getElementById('btn-login');
+  btn.disabled = true;
+  btn.textContent = 'Verificando...';
 
-  setLoading(true);
-  showAlert('', '');
+  const hash = await sha256(pw);
 
-  function executarBusca() {
-    if (!BASE_CARREGADA) { setTimeout(executarBusca, 200); return; }
-    setLoading(false);
+  if (hash === HASH_CORRETO) {
+    sessionStorage.setItem(STORAGE_KEY, 'ok');
+    sessionStorage.setItem('kle_tentativas', '0');
+    btn.textContent = '✓ Acesso liberado';
+    btn.style.background = '#1A7A4A';
+    btn.style.color = 'white';
+    setTimeout(() => { window.location.href = 'painel.html'; }, 600);
+  } else {
+    tentativas++;
+    sessionStorage.setItem('kle_tentativas', tentativas.toString());
+    btn.disabled = false;
+    btn.textContent = 'Entrar no Painel';
 
-    if (BASE_ERRO) {
-      showAlert('Erro ao carregar a base de documentos. Tente novamente em instantes ou entre em contato com o financeiro KLE.', 'err');
-      return;
+    const restantes = MAX_TENTATIVAS - tentativas;
+    const errorEl = document.getElementById('error-msg');
+    errorEl.classList.add('show');
+
+    if (tentativas >= MAX_TENTATIVAS) {
+      localStorage.setItem(LOCKOUT_KEY, (Date.now() + LOCKOUT_SEGUNDOS * 1000).toString());
+      showLockout(LOCKOUT_SEGUNDOS);
+    } else {
+      errorEl.textContent = `Senha incorreta. ${restantes} tentativa${restantes !== 1 ? 's' : ''} restante${restantes !== 1 ? 's' : ''}.`;
+      document.getElementById('attempts-msg').textContent =
+        restantes <= 2 ? `⚠️ Após ${MAX_TENTATIVAS} tentativas o acesso será bloqueado por 5 min.` : '';
+      document.getElementById('pw-input').value = '';
+      document.getElementById('pw-input').focus();
     }
-
-    var dados = BASE[cnpj];
-    if (!dados || !dados.pedidos || dados.pedidos.length === 0) {
-      showAlert('Nenhum documento encontrado para este CNPJ. Verifique o CNPJ informado ou <a href="https://wa.me/5511919608501?text=Olá,%20preciso%20de%20ajuda%20para%20acessar%20meus%20documentos%20no%20portal%20KLE." target="_blank" style="color:inherit;font-weight:600;text-decoration:underline;">fale com o financeiro KLE pelo WhatsApp</a>.', 'err');
-      return;
-    }
-
-    document.getElementById('res-empresa').textContent = dados.empresa;
-    document.getElementById('res-cnpj').textContent = formatarCNPJ(cnpj);
-    document.getElementById('res-count').textContent = dados.pedidos.length + (dados.pedidos.length === 1 ? ' pedido encontrado' : ' pedidos encontrados');
-
-    var lista = document.getElementById('pedidos-list');
-    lista.innerHTML = '';
-
-    dados.pedidos.forEach(function(p, idx) {
-      var item = document.createElement('div');
-      item.className = 'pedido-item';
-
-      var temBoleto = !!p.urlBoleto;
-      var temNF = !!p.urlNF;
-
-      var entregaLabel = p.entrega ? 'Vencimento: ' + p.entrega : '';
-
-      item.innerHTML =
-        '<div class="pedido-header" onclick="togglePedido(' + idx + ')">' +
-          '<div class="pedido-info">' +
-            '<span class="pedido-num">Pedido #' + p.pedido + '</span>' +
-            '<div>' +
-              '<div class="pedido-data">' + entregaLabel + '</div>' +
-              '<div class="pedido-valor">' + p.valor + '</div>' +
-            '</div>' +
-          '</div>' +
-          '<span class="pedido-chevron" id="chev-' + idx + '">&#8964;</span>' +
-        '</div>' +
-        '<div class="pedido-docs" id="docs-' + idx + '">' +
-          '<a class="doc-btn' + (temBoleto ? '' : ' disabled') + '" ' + (temBoleto ? 'href="' + p.urlBoleto + '" target="_blank"' : '') + '>' +
-            '<div class="doc-btn-left">' +
-              '<div class="doc-ico boleto">&#128190;</div>' +
-              '<div>' +
-                '<div class="doc-btn-name">Boleto bancario</div>' +
-                '<div class="doc-btn-sub">' + (temBoleto ? 'Clique para baixar' : 'Indisponivel — contate o financeiro') + '</div>' +
-              '</div>' +
-            '</div>' +
-            '<span class="doc-badge ' + (temBoleto ? 'badge-ok">Disponivel' : 'badge-no">Indisponivel') + '</span>' +
-          '</a>' +
-          '<a class="doc-btn' + (temNF ? '' : ' disabled') + '" ' + (temNF ? 'href="' + p.urlNF + '" target="_blank"' : '') + '>' +
-            '<div class="doc-btn-left">' +
-              '<div class="doc-ico nf">&#128196;</div>' +
-              '<div>' +
-                '<div class="doc-btn-name">Nota fiscal (DANFE)</div>' +
-                '<div class="doc-btn-sub">' + (temNF ? 'Clique para baixar' : 'Indisponivel — contate o financeiro') + '</div>' +
-              '</div>' +
-            '</div>' +
-            '<span class="doc-badge ' + (temNF ? 'badge-ok">Disponivel' : 'badge-no">Indisponivel') + '</span>' +
-          '</a>' +
-        '</div>';
-
-      lista.appendChild(item);
-    });
-
-    document.getElementById('form-section').style.display = 'none';
-    document.getElementById('result').style.display = 'block';
   }
-
-  executarBusca();
 }
 
-function togglePedido(idx) {
-  var docs = document.getElementById('docs-' + idx);
-  var chev = document.getElementById('chev-' + idx);
-  var isOpen = docs.classList.contains('open');
-  docs.classList.toggle('open', !isOpen);
-  chev.classList.toggle('open', !isOpen);
+function togglePw() {
+  const input = document.getElementById('pw-input');
+  const toggle = document.getElementById('toggle-pw');
+  if (input.type === 'password') {
+    input.type = 'text';
+    toggle.textContent = '🙈';
+  } else {
+    input.type = 'password';
+    toggle.textContent = '👁';
+  }
 }
 
-function novaBusca() {
-  document.getElementById('cnpj').value = '';
-  document.getElementById('result').style.display = 'none';
-  document.getElementById('form-section').style.display = 'block';
-  document.getElementById('pedidos-list').innerHTML = '';
-  showAlert('', '');
-  document.getElementById('cnpj').focus();
-}
-
-function setLoading(on) {
-  document.getElementById('btn-buscar').disabled = on;
-  document.getElementById('spinner').style.display = on ? 'block' : 'none';
-  document.getElementById('btn-text').textContent = on ? 'Consultando...' : 'Consultar documentos';
-}
-
-function showAlert(msg, type) {
-  var el = document.getElementById('alert');
-  el.innerHTML = msg;
-  el.className = 'alert ' + type;
-  el.style.display = msg ? 'block' : 'none';
-}
+// Foco automático
+document.getElementById('pw-input').focus();
+checkLockout();
 </script>
 </body>
 </html>
