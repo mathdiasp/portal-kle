@@ -51,10 +51,6 @@ body{font-family:'Nunito',sans-serif;color:#fff;overflow-x:hidden;}
   text-shadow:0 0 20px #FFD600,0 0 40px rgba(255,200,0,0.5);}
 .days-lbl{font-size:9px;color:rgba(255,200,0,0.5);font-weight:800;letter-spacing:2px;text-transform:uppercase;}
 
-/* ===== TABS ===== */
-.tabs{display:flex;gap:4px;margin-bottom:18px;background:rgba(255,200,0,0.05);border:1px solid rgba(255,200,0,0.1);border-radius:12px;padding:4px;}
-.tab-btn{flex:1;padding:9px;border:none;background:transparent;border-radius:9px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;color:rgba(255,200,0,0.35);cursor:pointer;transition:all 0.25s;letter-spacing:0.5px;}
-.tab-btn.active{background:linear-gradient(135deg,rgba(255,200,0,0.2),rgba(255,100,0,0.15));color:#FFD600;box-shadow:0 0 12px rgba(255,200,0,0.15);}
 .page{display:none;}.page.visible{display:block;}
 
 /* ===== SLOT MACHINE COUNTER ===== */
@@ -201,30 +197,6 @@ body{font-family:'Nunito',sans-serif;color:#fff;overflow-x:hidden;}
 .mot-icon{font-size:22px;flex-shrink:0;}
 .mot-txt{font-size:13px;font-weight:700;color:rgba(255,255,255,0.55);line-height:1.5;}
 
-/* ===== ADMIN ===== */
-.adm-card{background:rgba(255,200,0,0.03);border:1px solid rgba(255,200,0,0.1);border-radius:14px;padding:18px;margin-bottom:12px;}
-.adm-title{font-size:11px;font-weight:800;color:rgba(255,200,0,0.35);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
-.adm-title::before{content:'';display:block;width:3px;height:12px;background:#FFD600;border-radius:2px;}
-.adm-lbl{font-size:11px;font-weight:700;color:rgba(255,200,0,0.3);letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:6px;}
-.adm-inp{width:100%;padding:11px 14px;border:1.5px solid rgba(255,200,0,0.15);border-radius:10px;font-size:15px;font-family:'Nunito',sans-serif;font-weight:700;color:#fff;background:rgba(255,200,0,0.04);outline:none;transition:border-color 0.2s;margin-bottom:10px;}
-.adm-inp:focus{border-color:#FFD600;}
-.adm-inp::placeholder{color:rgba(255,255,255,0.2);}
-.adm-btn{width:100%;padding:13px;background:linear-gradient(135deg,#FFD600,#FF8C00);color:#1a0000;border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:900;cursor:pointer;transition:all 0.2s;margin-top:4px;letter-spacing:0.5px;box-shadow:0 4px 15px rgba(255,200,0,0.2);}
-.adm-btn:hover{box-shadow:0 4px 25px rgba(255,200,0,0.4);transform:translateY(-1px);}
-.adm-btn:active{transform:scale(0.97);}
-.adm-note{font-size:11px;color:rgba(255,255,255,0.2);margin-top:6px;font-weight:600;}
-
-/* ===== PASSWORD ===== */
-.pwd-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.95);display:none;align-items:center;justify-content:center;z-index:8000;}
-.pwd-overlay.show{display:flex;}
-.pwd-box{background:linear-gradient(135deg,#1a1200,#0d0d00);border:2px solid rgba(255,200,0,0.4);border-radius:20px;padding:30px 26px;text-align:center;max-width:280px;width:90%;box-shadow:0 0 40px rgba(255,200,0,0.15);}
-.pwd-title{font-family:'Bebas Neue',sans-serif;font-size:28px;color:#FFD600;letter-spacing:2px;margin-bottom:6px;text-shadow:0 0 20px rgba(255,200,0,0.5);}
-.pwd-sub{font-size:13px;color:rgba(255,200,0,0.35);font-weight:600;margin-bottom:18px;}
-.pwd-inp{width:100%;padding:11px;border:1.5px solid rgba(255,200,0,0.2);border-radius:10px;font-size:18px;font-family:'Nunito',sans-serif;font-weight:700;color:#FFD600;background:rgba(0,0,0,0.5);outline:none;text-align:center;letter-spacing:6px;margin-bottom:12px;}
-.pwd-inp:focus{border-color:#FFD600;box-shadow:0 0 15px rgba(255,200,0,0.2);}
-.pwd-btn{width:100%;padding:12px;background:linear-gradient(135deg,#FFD600,#FF8C00);color:#1a0000;border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:900;cursor:pointer;}
-.pwd-err{font-size:12px;color:#ff5252;font-weight:700;margin-top:8px;display:none;}
-
 /* ===== CELEBRATION ===== */
 .cel{position:fixed;inset:0;background:rgba(0,0,0,0.9);display:none;align-items:center;justify-content:center;z-index:9999;}
 .cel.show{display:flex;}
@@ -272,13 +244,6 @@ body{font-family:'Nunito',sans-serif;color:#fff;overflow-x:hidden;}
       <div class="days-lbl">dias restantes</div>
     </div>
   </div>
-
-  <!-- TABS -->
-  <div class="tabs">
-    <button class="tab-btn active" onclick="showPage('dash',this)">🎰 Painel</button>
-    <button class="tab-btn" onclick="openAdmin(this)">⚙️ Admin</button>
-  </div>
-
   <!-- DASHBOARD -->
   <div id="page-dash" class="page visible">
 
@@ -388,49 +353,7 @@ body{font-family:'Nunito',sans-serif;color:#fff;overflow-x:hidden;}
 
   </div><!-- /page-dash -->
 
-  <!-- ADMIN -->
-  <div id="page-admin" class="page">
-    <div class="adm-card">
-      <div class="adm-title">Atualizar contagem</div>
-      <label class="adm-lbl">Total acumulado de kits entregues</label>
-      <input type="number" class="adm-inp" id="adm-kits" placeholder="Ex: 15000" min="0" max="350000">
-      <div class="adm-note">Digite o total acumulado desde 27/04, não o incremento do dia.</div>
-      <button class="adm-btn" onclick="updateCount()">Atualizar painel</button>
-    </div>
-    <div class="adm-card">
-      <div class="adm-title">Prêmios surpresa</div>
-      <label class="adm-lbl">Prêmio — 270.000 kits</label>
-      <input type="text" class="adm-inp" id="adm-p270" placeholder="Ex: Viagem surpresa para o time!">
-      <label class="adm-lbl">Prêmio — 300.000 kits</label>
-      <input type="text" class="adm-inp" id="adm-p300" placeholder="Ex: Bônus especial!">
-      <button class="adm-btn" onclick="savePrizes()">Salvar prêmios</button>
-    </div>
-    <div class="adm-card">
-      <div class="adm-title">Mensagem motivacional</div>
-      <label class="adm-lbl">Texto exibido no painel</label>
-      <input type="text" class="adm-inp" id="adm-mot" placeholder="Ex: Hoje é dia de superar o recorde!">
-      <button class="adm-btn" onclick="saveMot()">Salvar mensagem</button>
-    </div>
-    <div class="adm-card">
-      <div class="adm-title">Alterar senha admin</div>
-      <label class="adm-lbl">Nova senha</label>
-      <input type="password" class="adm-inp" id="adm-newpwd" placeholder="Nova senha">
-      <button class="adm-btn" onclick="changePwd()">Alterar senha</button>
-    </div>
-  </div>
-
 </div><!-- /wrap -->
-
-<!-- PASSWORD -->
-<div class="pwd-overlay" id="pwd-overlay">
-  <div class="pwd-box">
-    <div class="pwd-title">🔐 Área Admin</div>
-    <div class="pwd-sub">Digite a senha para continuar</div>
-    <input type="password" class="pwd-inp" id="pwd-inp" placeholder="••••••" onkeydown="if(event.key==='Enter')checkPwd()">
-    <button class="pwd-btn" onclick="checkPwd()">Entrar</button>
-    <div class="pwd-err" id="pwd-err">Senha incorreta ❌</div>
-  </div>
-</div>
 
 <!-- CELEBRATION -->
 <div class="cel" id="cel">
@@ -444,11 +367,9 @@ body{font-family:'Nunito',sans-serif;color:#fff;overflow-x:hidden;}
 
 <script>
 const END_DATE = new Date('2026-07-20T00:00:00');
-const DEFAULT_PWD = 'kle2025';
 let kits = 0;
 let displayedKits = 0;
 let rollInterval = null;
-let pendingAdminBtn = null;
 
 const motivations = [
   "Cada kit entregue é um evento que termina com sucesso. Bora, time KLE!",
@@ -464,7 +385,6 @@ const motivations = [
 
 function sv(k,v){try{localStorage.setItem(k,v);}catch(e){}}
 function ld(k){try{return localStorage.getItem(k);}catch(e){return null;}}
-function getPwd(){return ld('kle_pwd')||DEFAULT_PWD;}
 
 function getDaysLeft(){
   const t=new Date();t.setHours(0,0,0,0);
@@ -493,8 +413,8 @@ async function fetchGist(){
 
 function initData(){
   const s=ld('kle_kits4');if(s){kits=parseInt(s)||0;displayedKits=kits;}
-  const p270=ld('kle_p270');if(p270){document.getElementById('ms-270-prize').textContent=p270;document.getElementById('adm-p270').value=p270;}
-  const p300=ld('kle_p300');if(p300){document.getElementById('ms-300-prize').textContent=p300;document.getElementById('adm-p300').value=p300;}
+  const p270=ld('kle_p270');if(p270){document.getElementById('ms-270-prize').textContent=p270;}
+  const p300=ld('kle_p300');if(p300){document.getElementById('ms-300-prize').textContent=p300;}
   const mot=ld('kle_mot4');if(mot)document.getElementById('mot-txt').textContent=mot;
 }
 
@@ -588,35 +508,9 @@ function setMS(id,target,prev,kits,icon,doneIcon){
   }
 }
 
-function updateCount(){
-  const val=parseInt(document.getElementById('adm-kits').value);
-  if(isNaN(val)||val<0){alert('Digite um valor válido.');return;}
-  const prev=kits;kits=val;sv('kle_kits4',val);
-  updateUI(true);
-  if(prev<240000&&val>=240000)setTimeout(()=>celebrate('🍖','CHURRASCO!','240.000 kits! Hora de acender a brasa! 🔥🥩'),1600);
-  else if(prev<270000&&val>=270000)setTimeout(()=>celebrate('🏆','META 270K!','Prêmio surpresa desbloqueado! Vocês são demais!'),1600);
-  else if(prev<300000&&val>=300000)setTimeout(()=>celebrate('🚀','300K LENDÁRIO!','A meta máxima foi batida! Isso é história!'),1600);
-  else toast('✅ Painel atualizado!');
-}
 
-function savePrizes(){
-  const p270=document.getElementById('adm-p270').value.trim();
-  const p300=document.getElementById('adm-p300').value.trim();
-  if(p270){sv('kle_p270',p270);document.getElementById('ms-270-prize').textContent=p270;}
-  if(p300){sv('kle_p300',p300);document.getElementById('ms-300-prize').textContent=p300;}
-  toast('✅ Prêmios salvos!');updateUI(false);
-}
 
-function saveMot(){
-  const msg=document.getElementById('adm-mot').value.trim();
-  if(msg){sv('kle_mot4',msg);document.getElementById('mot-txt').textContent=msg;toast('✅ Mensagem salva!');}
-}
 
-function changePwd(){
-  const p=document.getElementById('adm-newpwd').value.trim();
-  if(p.length<4){alert('Mínimo 4 caracteres.');return;}
-  sv('kle_pwd',p);toast('✅ Senha alterada!');document.getElementById('adm-newpwd').value='';
-}
 
 function toast(msg){
   const n=document.createElement('div');
@@ -624,35 +518,8 @@ function toast(msg){
   n.textContent=msg;document.body.appendChild(n);setTimeout(()=>n.remove(),2600);
 }
 
-function openAdmin(btn){
-  pendingAdminBtn=btn;
-  document.getElementById('pwd-inp').value='';
-  document.getElementById('pwd-err').style.display='none';
-  document.getElementById('pwd-overlay').classList.add('show');
-  setTimeout(()=>document.getElementById('pwd-inp').focus(),100);
-}
 
-function checkPwd(){
-  if(document.getElementById('pwd-inp').value===getPwd()){
-    document.getElementById('pwd-overlay').classList.remove('show');
-    document.querySelectorAll('.page').forEach(p=>p.classList.remove('visible'));
-    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-    document.getElementById('page-admin').classList.add('visible');
-    if(pendingAdminBtn)pendingAdminBtn.classList.add('active');
-  } else {
-    document.getElementById('pwd-err').style.display='block';
-    document.getElementById('pwd-inp').value='';
-    document.getElementById('pwd-inp').focus();
-  }
-}
 
-function showPage(name,btn){
-  if(name==='admin'){openAdmin(btn);return;}
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('visible'));
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('page-'+name).classList.add('visible');
-  btn.classList.add('active');
-}
 
 function celebrate(em,title,text){
   document.getElementById('cel-em').textContent=em;
@@ -674,7 +541,6 @@ function launchConfetti(){
   }
 }
 
-document.addEventListener('keydown',e=>{if(e.key==='Escape')document.getElementById('pwd-overlay').classList.remove('show');});
 
 initData();
 updateUI(false);
