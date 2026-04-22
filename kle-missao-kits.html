@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KLE — Missão 240k Kits</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;width:100%;}
+
+:root{
+  --green:#2D6A2D;
+  --green-light:#66bb6a;
+  --yellow:#FFD600;
+  --orange:#FF6D00;
+}
+
+body{
+  font-family:'Nunito',sans-serif;
+  background:#0a1a0a;
+  color:#fff;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+.bg-img{
+  position:fixed;inset:0;
+  background-image:url('https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=1600&q=60');
+  background-size:cover;background-position:center;
+  filter:brightness(0.18) saturate(0.6);
+  z-index:0;
+}
+
+.bg-overlay{
+  position:fixed;inset:0;
+  background:linear-gradient(180deg,rgba(0,30,0,0.75) 0%,rgba(0,15,0,0.88) 100%);
+  z-index:1;
+}
+
+.wrap{
+  position:relative;z-index:2;
+  max-width:700px;margin:0 auto;
+  padding:28px 20px 40px;
+}
+
+/* Header */
+.top-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px;}
+.kle-badge{display:flex;align-items:center;gap:10px;}
+.kle-icon{width:46px;height:46px;background:var(--yellow);border-radius:11px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:17px;color:#1a3a00;letter-spacing:1px;}
+.kle-name{font-family:'Bebas Neue',sans-serif;font-size:22px;color:#fff;letter-spacing:2px;line-height:1.1;}
+.kle-sub{font-size:10px;color:rgba(255,255,255,0.4);font-weight:700;letter-spacing:2px;text-transform:uppercase;}
+
+.days-pill{background:rgba(255,214,0,0.1);border:1px solid rgba(255,214,0,0.35);border-radius:14px;padding:10px 18px;text-align:center;}
+.days-num{font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--yellow);line-height:1;letter-spacing:2px;}
+.days-lbl{font-size:9px;color:rgba(255,255,255,0.45);font-weight:700;letter-spacing:2px;text-transform:uppercase;}
+
+/* Tabs */
+.tabs{display:flex;gap:4px;margin-bottom:22px;background:rgba(255,255,255,0.05);border-radius:11px;padding:4px;}
+.tab-btn{flex:1;padding:9px;border:none;background:transparent;border-radius:8px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;color:rgba(255,255,255,0.35);cursor:pointer;transition:all 0.2s;letter-spacing:0.5px;}
+.tab-btn.active{background:rgba(255,255,255,0.1);color:var(--yellow);}
+
+.page{display:none;}
+.page.visible{display:block;}
+
+/* Rocket track */
+.rocket-wrap{position:relative;height:100px;margin-bottom:20px;}
+.track-bg{position:absolute;bottom:12px;left:10px;right:10px;height:10px;background:rgba(255,255,255,0.08);border-radius:100px;}
+.track-fill{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--green),var(--green-light),var(--yellow));transition:width 1.5s cubic-bezier(0.34,1.2,0.64,1);}
+.rocket-el{position:absolute;bottom:4px;font-size:36px;transform:rotate(-90deg);transition:left 1.5s cubic-bezier(0.34,1.2,0.64,1);filter:drop-shadow(0 0 10px rgba(255,150,0,0.7));animation:bob 2s ease-in-out infinite;}
+@keyframes bob{0%,100%{bottom:4px;}50%{bottom:9px;}}
+
+.flag-item{position:absolute;bottom:28px;text-align:center;transform:translateX(-50%);}
+.flag-item span{font-size:20px;display:block;}
+.flag-item small{font-size:9px;font-weight:800;color:rgba(255,255,255,0.35);letter-spacing:1px;text-transform:uppercase;white-space:nowrap;}
+
+/* Counter */
+.counter-block{text-align:center;margin-bottom:20px;}
+.counter-lbl{font-size:11px;font-weight:800;color:rgba(255,255,255,0.35);letter-spacing:3px;text-transform:uppercase;margin-bottom:4px;}
+.counter-num{
+  font-family:'Bebas Neue',sans-serif;font-size:90px;line-height:1;letter-spacing:3px;
+  background:linear-gradient(135deg,#FFD600 0%,#FF9800 50%,#FFD600 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:glow 3s ease-in-out infinite;
+}
+@keyframes glow{0%,100%{filter:drop-shadow(0 0 20px rgba(255,214,0,0.2));}50%{filter:drop-shadow(0 0 50px rgba(255,214,0,0.5));}}
+.counter-range{font-size:13px;color:rgba(255,255,255,0.3);font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-top:4px;}
+
+/* Main progress bar */
+.prog-wrap{margin-bottom:22px;}
+.prog-track{background:rgba(255,255,255,0.07);border-radius:100px;height:20px;overflow:hidden;position:relative;}
+.prog-fill{height:100%;border-radius:100px;background:linear-gradient(90deg,#2e7d32,#66bb6a,#FFD600);transition:width 1.5s cubic-bezier(0.34,1.2,0.64,1);position:relative;overflow:hidden;}
+.prog-shine{position:absolute;top:0;left:-100%;width:50%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.25),transparent);animation:shine 2.5s ease-in-out infinite;}
+@keyframes shine{0%{left:-100%;}100%{left:220%;}}
+.prog-labels{display:flex;justify-content:space-between;margin-top:8px;align-items:center;}
+.prog-l{font-size:13px;font-weight:800;color:rgba(255,255,255,0.4);}
+.prog-l strong{color:#fff;}
+.prog-r{font-size:18px;font-weight:900;color:var(--yellow);}
+
+/* Milestones */
+.ms-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
+.ms-card{border-radius:16px;padding:16px 14px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);position:relative;overflow:hidden;transition:all 0.4s ease;}
+.ms-card.active{background:rgba(255,214,0,0.06);border-color:rgba(255,214,0,0.3);}
+.ms-card.done{background:rgba(46,125,50,0.22);border-color:rgba(102,187,106,0.55);box-shadow:0 0 24px rgba(102,187,106,0.2);}
+.ms-emoji{font-size:28px;margin-bottom:7px;display:block;}
+.ms-num{font-family:'Bebas Neue',sans-serif;font-size:34px;letter-spacing:1px;line-height:1;margin-bottom:4px;}
+.ms-card.active .ms-num{color:var(--yellow);}
+.ms-card.done .ms-num{color:var(--green-light);}
+.ms-card.locked .ms-num{color:rgba(255,255,255,0.18);}
+.ms-prize{font-size:12px;font-weight:800;line-height:1.3;}
+.ms-card.active .ms-prize{color:var(--orange);}
+.ms-card.done .ms-prize{color:#81c784;}
+.ms-card.locked .ms-prize{color:rgba(255,255,255,0.18);}
+.ms-bar-bg{margin-top:10px;background:rgba(255,255,255,0.07);border-radius:100px;height:5px;overflow:hidden;}
+.ms-bar-fill{height:100%;border-radius:100px;transition:width 1.5s ease;}
+.ms-card.active .ms-bar-fill{background:linear-gradient(90deg,var(--yellow),var(--orange));}
+.ms-card.done .ms-bar-fill{background:var(--green-light);}
+.ms-check{position:absolute;top:10px;right:10px;font-size:18px;}
+
+/* Stats */
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px;}
+.st-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:14px 10px;text-align:center;}
+.st-val{font-family:'Bebas Neue',sans-serif;font-size:28px;color:#fff;letter-spacing:1px;line-height:1;margin-bottom:3px;}
+.st-lbl{font-size:9px;font-weight:800;color:rgba(255,255,255,0.28);letter-spacing:1.5px;text-transform:uppercase;}
+
+/* Motivation */
+.mot-bar{background:rgba(46,125,50,0.22);border:1px solid rgba(102,187,106,0.2);border-radius:14px;padding:14px 18px;display:flex;align-items:center;gap:12px;}
+.mot-icon{font-size:24px;flex-shrink:0;}
+.mot-txt{font-size:14px;font-weight:700;color:rgba(255,255,255,0.65);line-height:1.5;}
+
+/* Admin */
+.adm-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px;margin-bottom:14px;}
+.adm-title{font-size:11px;font-weight:800;color:rgba(255,255,255,0.3);letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.adm-title::before{content:'';display:block;width:3px;height:13px;background:var(--yellow);border-radius:2px;}
+.adm-lbl{font-size:11px;font-weight:700;color:rgba(255,255,255,0.35);letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:7px;}
+.adm-inp{width:100%;padding:11px 14px;border:1.5px solid rgba(255,255,255,0.1);border-radius:10px;font-size:15px;font-family:'Nunito',sans-serif;font-weight:700;color:#fff;background:rgba(255,255,255,0.06);outline:none;transition:border-color 0.2s;margin-bottom:12px;}
+.adm-inp:focus{border-color:var(--yellow);}
+.adm-inp::placeholder{color:rgba(255,255,255,0.2);}
+.adm-btn{width:100%;padding:13px;background:var(--yellow);color:#1a3a00;border:none;border-radius:11px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:900;cursor:pointer;transition:all 0.2s;letter-spacing:0.5px;margin-top:2px;}
+.adm-btn:hover{background:#ffe033;transform:translateY(-1px);}
+.adm-btn:active{transform:scale(0.97);}
+.adm-note{font-size:11px;color:rgba(255,255,255,0.25);margin-top:8px;font-weight:600;}
+
+/* Celebration */
+.cel{position:fixed;inset:0;background:rgba(0,0,0,0.82);display:none;align-items:center;justify-content:center;z-index:9999;}
+.cel.show{display:flex;}
+.cel-box{background:#0d2a0d;border:2px solid var(--yellow);border-radius:26px;padding:40px 32px;text-align:center;max-width:340px;width:90%;animation:popIn 0.5s cubic-bezier(0.34,1.56,0.64,1);position:relative;overflow:hidden;}
+.cel-box::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,rgba(255,214,0,0.12),transparent 65%);pointer-events:none;}
+.cel-emoji{font-size:80px;margin-bottom:14px;animation:bounce 0.5s ease infinite alternate;display:block;}
+@keyframes bounce{from{transform:scale(1);}to{transform:scale(1.18);}}
+.cel-title{font-family:'Bebas Neue',sans-serif;font-size:46px;color:var(--yellow);letter-spacing:3px;line-height:1;margin-bottom:10px;}
+.cel-text{font-size:16px;color:rgba(255,255,255,0.7);font-weight:700;margin-bottom:28px;line-height:1.5;}
+.cel-btn{padding:14px 36px;background:var(--yellow);color:#1a3a00;border:none;border-radius:12px;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;cursor:pointer;letter-spacing:1px;}
+@keyframes popIn{from{transform:scale(0.3) rotate(-8deg);opacity:0;}to{transform:scale(1) rotate(0deg);opacity:1;}}
+
+/* Confetti */
+.conf{position:fixed;top:-20px;border-radius:2px;z-index:10000;pointer-events:none;animation:fall linear forwards;}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:0;}}
+
+/* Password */
+.pwd-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.92);display:none;align-items:center;justify-content:center;z-index:8000;}
+.pwd-overlay.show{display:flex;}
+.pwd-box{background:#0d2a0d;border:1px solid rgba(255,214,0,0.3);border-radius:20px;padding:32px 28px;text-align:center;max-width:300px;width:90%;}
+.pwd-title{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--yellow);letter-spacing:2px;margin-bottom:6px;}
+.pwd-sub{font-size:13px;color:rgba(255,255,255,0.4);font-weight:600;margin-bottom:20px;}
+.pwd-inp{width:100%;padding:11px 14px;border:1.5px solid rgba(255,255,255,0.15);border-radius:10px;font-size:16px;font-family:'Nunito',sans-serif;font-weight:700;color:#fff;background:rgba(255,255,255,0.07);outline:none;text-align:center;letter-spacing:4px;margin-bottom:14px;}
+.pwd-inp:focus{border-color:var(--yellow);}
+.pwd-btn{width:100%;padding:12px;background:var(--yellow);color:#1a3a00;border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:900;cursor:pointer;}
+.pwd-err{font-size:12px;color:#ff5252;font-weight:700;margin-top:8px;display:none;}
+</style>
+</head>
+<body>
+
+<div class="bg-img"></div>
+<div class="bg-overlay"></div>
+
+<div class="wrap">
+
+  <div class="top-bar">
+    <div class="kle-badge">
+      <div class="kle-icon">KLE</div>
+      <div>
+        <div class="kle-name">Kit Lanche Express</div>
+        <div class="kle-sub">Missão 240k Kits</div>
+      </div>
+    </div>
+    <div class="days-pill">
+      <div class="days-num" id="days-left">--</div>
+      <div class="days-lbl">dias restantes</div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showPage('dash',this)">🏆 Painel</button>
+    <button class="tab-btn" onclick="openAdmin(this)">⚙️ Admin</button>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="page-dash" class="page visible">
+
+    <div class="rocket-wrap">
+      <div class="track-bg">
+        <div class="track-fill" id="track-fill" style="width:0%"></div>
+      </div>
+      <div class="rocket-el" id="rocket" style="left:0px">🚀</div>
+      <div class="flag-item" id="flag-240" style="left:0%">
+        <span>🍖</span><small>240k</small>
+      </div>
+      <div class="flag-item" id="flag-270" style="left:0%">
+        <span>🏆</span><small>270k</small>
+      </div>
+      <div class="flag-item" id="flag-300" style="right:2px;transform:none;text-align:right">
+        <span>🚀</span><small>300k</small>
+      </div>
+    </div>
+
+    <div class="counter-block">
+      <div class="counter-lbl">Kits produzidos</div>
+      <div class="counter-num" id="kit-num">0</div>
+      <div class="counter-range">27 abr → 20 jul 2025</div>
+    </div>
+
+    <div class="prog-wrap">
+      <div class="prog-track">
+        <div class="prog-fill" id="prog-fill" style="width:0%">
+          <div class="prog-shine"></div>
+        </div>
+      </div>
+      <div class="prog-labels">
+        <span class="prog-l">Meta: <strong>240.000 kits 🍖 Churrasco!</strong></span>
+        <span class="prog-r" id="main-pct">0%</span>
+      </div>
+    </div>
+
+    <div class="ms-grid">
+      <div class="ms-card active" id="ms-240">
+        <span class="ms-emoji" id="ms-240-em">🍖</span>
+        <div class="ms-num">240k</div>
+        <div class="ms-prize" id="ms-240-prize">Churrasco para o time!</div>
+        <div class="ms-bar-bg"><div class="ms-bar-fill" id="ms-240-bar" style="width:0%"></div></div>
+      </div>
+      <div class="ms-card locked" id="ms-270">
+        <span class="ms-emoji" id="ms-270-em">🔒</span>
+        <div class="ms-num">270k</div>
+        <div class="ms-prize" id="ms-270-prize">Prêmio surpresa</div>
+        <div class="ms-bar-bg"><div class="ms-bar-fill" id="ms-270-bar" style="width:0%"></div></div>
+      </div>
+      <div class="ms-card locked" id="ms-300">
+        <span class="ms-emoji" id="ms-300-em">🔒</span>
+        <div class="ms-num">300k</div>
+        <div class="ms-prize" id="ms-300-prize">Prêmio surpresa</div>
+        <div class="ms-bar-bg"><div class="ms-bar-fill" id="ms-300-bar" style="width:0%"></div></div>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="st-card">
+        <div class="st-val" id="st-remain">240k</div>
+        <div class="st-lbl">Faltam</div>
+      </div>
+      <div class="st-card">
+        <div class="st-val" id="st-daily">--</div>
+        <div class="st-lbl">Kits/dia necessário</div>
+      </div>
+      <div class="st-card">
+        <div class="st-val" id="st-pct">0%</div>
+        <div class="st-lbl">Concluído</div>
+      </div>
+    </div>
+
+    <div class="mot-bar">
+      <span class="mot-icon">💪</span>
+      <div class="mot-txt" id="mot-txt">Cada kit entregue é um evento que termina com sucesso. Bora, time KLE!</div>
+    </div>
+
+  </div>
+
+  <!-- ADMIN -->
+  <div id="page-admin" class="page">
+    <div class="adm-card">
+      <div class="adm-title">Atualizar contagem</div>
+      <label class="adm-lbl">Total acumulado de kits produzidos</label>
+      <input type="number" class="adm-inp" id="adm-kits" placeholder="Ex: 15000" min="0" max="350000">
+      <div class="adm-note">Digite o total acumulado desde 27/04, não o incremento diário.</div>
+      <button class="adm-btn" onclick="updateCount()" style="margin-top:14px">Atualizar painel</button>
+    </div>
+
+    <div class="adm-card">
+      <div class="adm-title">Prêmios surpresa</div>
+      <label class="adm-lbl">Prêmio — 270.000 kits</label>
+      <input type="text" class="adm-inp" id="adm-p270" placeholder="Ex: Viagem surpresa para o time!">
+      <label class="adm-lbl">Prêmio — 300.000 kits</label>
+      <input type="text" class="adm-inp" id="adm-p300" placeholder="Ex: Bônus especial!">
+      <button class="adm-btn" onclick="savePrizes()">Salvar prêmios</button>
+    </div>
+
+    <div class="adm-card">
+      <div class="adm-title">Mensagem motivacional</div>
+      <label class="adm-lbl">Texto exibido no painel</label>
+      <input type="text" class="adm-inp" id="adm-mot" placeholder="Ex: Hoje é dia de superar o recorde!">
+      <button class="adm-btn" onclick="saveMot()">Salvar mensagem</button>
+    </div>
+
+    <div class="adm-card">
+      <div class="adm-title">Alterar senha admin</div>
+      <label class="adm-lbl">Nova senha</label>
+      <input type="password" class="adm-inp" id="adm-newpwd" placeholder="Nova senha">
+      <button class="adm-btn" onclick="changePwd()">Alterar senha</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Password gate -->
+<div class="pwd-overlay" id="pwd-overlay">
+  <div class="pwd-box">
+    <div class="pwd-title">Área Admin</div>
+    <div class="pwd-sub">Digite a senha para continuar</div>
+    <input type="password" class="pwd-inp" id="pwd-inp" placeholder="••••••" onkeydown="if(event.key==='Enter')checkPwd()">
+    <button class="pwd-btn" onclick="checkPwd()">Entrar</button>
+    <div class="pwd-err" id="pwd-err">Senha incorreta</div>
+  </div>
+</div>
+
+<!-- Celebration -->
+<div class="cel" id="cel">
+  <div class="cel-box">
+    <span class="cel-emoji" id="cel-em">🎉</span>
+    <div class="cel-title" id="cel-title">META!</div>
+    <div class="cel-text" id="cel-text">Parabéns!</div>
+    <button class="cel-btn" onclick="closeCel()">Incrível!</button>
+  </div>
+</div>
+
+<script>
+const END = new Date('2025-07-20');
+const DEFAULT_PWD = 'kle2025';
+let kits = 0;
+let pendingAdminBtn = null;
+
+const motivations = [
+  "Cada kit entregue é um evento que termina com sucesso. Bora, time KLE!",
+  "240.000 kits, uma equipe, um objetivo. Vamos juntos!",
+  "A distância entre o sonho e a meta se chama consistência.",
+  "Todo kit que sai daqui leva felicidade para alguém.",
+  "Times campeões fazem o dia perfeito. Hoje é esse dia.",
+  "Estamos construindo algo histórico. Kit por kit.",
+  "Foco, consistência e garra. É o DNA KLE.",
+  "Cada dia é uma nova chance de chegar mais perto do churrasco!",
+];
+
+function save(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+function load(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+
+function initData(){
+  const s=load('kle_kits3');if(s)kits=parseInt(s)||0;
+  const p270=load('kle_p270');if(p270){document.getElementById('ms-270-prize').textContent=p270;document.getElementById('adm-p270').value=p270;}
+  const p300=load('kle_p300');if(p300){document.getElementById('ms-300-prize').textContent=p300;document.getElementById('adm-p300').value=p300;}
+  const mot=load('kle_mot3');if(mot)document.getElementById('mot-txt').textContent=mot;
+}
+
+function getPwd(){return load('kle_pwd')||DEFAULT_PWD;}
+
+function getDaysLeft(){return Math.max(0,Math.ceil((END-new Date())/(86400000)));}
+function fmt(n){return Math.round(n).toLocaleString('pt-BR');}
+
+function updateUI(){
+  const pct=Math.min(100,(kits/240000)*100);
+  const dl=getDaysLeft();
+  document.getElementById('days-left').textContent=dl+'d';
+  document.getElementById('kit-num').textContent=fmt(kits);
+  document.getElementById('main-pct').textContent=pct.toFixed(1)+'%';
+  document.getElementById('st-pct').textContent=pct.toFixed(1)+'%';
+  document.getElementById('st-remain').textContent=fmt(Math.max(0,240000-kits));
+  const daily=dl>0?Math.ceil(Math.max(0,240000-kits)/dl):0;
+  document.getElementById('st-daily').textContent=fmt(daily);
+
+  // progress bar
+  document.getElementById('prog-fill').style.width=pct.toFixed(2)+'%';
+
+  // rocket track
+  const trackW = document.querySelector('.track-bg').offsetWidth||300;
+  const rktPct=Math.min(0.96,(kits/300000));
+  const rktLeft=rktPct*trackW;
+  document.getElementById('track-fill').style.width=(rktPct*100).toFixed(1)+'%';
+  document.getElementById('rocket').style.left=Math.max(0,rktLeft-18)+'px';
+
+  // flag positions
+  const f240=document.getElementById('flag-240');
+  const f270=document.getElementById('flag-270');
+  f240.style.left=((240000/300000)*100).toFixed(1)+'%';
+  f270.style.left=((270000/300000)*100).toFixed(1)+'%';
+
+  // milestones
+  setMS('240',240000,0,kits,'🍖','🎊');
+  setMS('270',270000,240000,kits,'🏆','🏆');
+  setMS('300',300000,270000,kits,'🚀','🚀');
+
+  // motivation
+  if(!load('kle_mot3')){
+    const idx=Math.floor(Date.now()/86400000)%motivations.length;
+    document.getElementById('mot-txt').textContent=motivations[idx];
+  }
+}
+
+function setMS(id,target,prev,kits,icon,doneIcon){
+  const card=document.getElementById('ms-'+id);
+  const bar=document.getElementById('ms-'+id+'-bar');
+  const em=document.getElementById('ms-'+id+'-em');
+  const inRange=Math.max(0,Math.min(target-prev,kits-prev));
+  const pct=Math.min(100,(inRange/(target-prev))*100);
+  bar.style.width=pct.toFixed(1)+'%';
+  let existing=card.querySelector('.ms-check');
+  if(kits>=target){
+    card.className='ms-card done';
+    if(em)em.textContent=doneIcon;
+    if(!existing){const b=document.createElement('div');b.className='ms-check';b.textContent='✅';card.appendChild(b);}
+  } else if(prev===0||kits>prev){
+    card.className='ms-card active';
+    if(em)em.textContent=icon;
+    if(existing)existing.remove();
+  } else {
+    card.className='ms-card locked';
+    if(em)em.textContent='🔒';
+    if(existing)existing.remove();
+  }
+}
+
+function updateCount(){
+  const val=parseInt(document.getElementById('adm-kits').value);
+  if(isNaN(val)||val<0){alert('Digite um valor válido.');return;}
+  const prev=kits; kits=val;
+  save('kle_kits3',val);
+  updateUI();
+  if(prev<240000&&val>=240000)celebrate('🍖','CHURRASCO!','240.000 kits! Tá na hora de acender a brasa! 🔥');
+  else if(prev<270000&&val>=270000)celebrate('🏆','META 270K!','Prêmio surpresa desbloqueado! Vocês são demais!');
+  else if(prev<300000&&val>=300000)celebrate('🚀','300K HISTÓRICO!','A meta máxima foi batida! Isso é lendário!');
+  else{const n=document.createElement('div');n.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#2D6A2D;color:#FFD600;font-family:Nunito,sans-serif;font-weight:800;font-size:15px;padding:12px 28px;border-radius:100px;z-index:9999;animation:fadeUp 2.5s forwards;';n.textContent='✅ Painel atualizado!';document.body.appendChild(n);setTimeout(()=>n.remove(),2500);}
+}
+
+function savePrizes(){
+  const p270=document.getElementById('adm-p270').value.trim();
+  const p300=document.getElementById('adm-p300').value.trim();
+  if(p270){save('kle_p270',p270);document.getElementById('ms-270-prize').textContent=p270;}
+  if(p300){save('kle_p300',p300);document.getElementById('ms-300-prize').textContent=p300;}
+  alert('Prêmios salvos com sucesso!');updateUI();
+}
+
+function saveMot(){
+  const msg=document.getElementById('adm-mot').value.trim();
+  if(msg){save('kle_mot3',msg);document.getElementById('mot-txt').textContent=msg;alert('Mensagem salva!');}
+}
+
+function changePwd(){
+  const p=document.getElementById('adm-newpwd').value.trim();
+  if(p.length<4){alert('Mínimo 4 caracteres.');return;}
+  save('kle_pwd',p);alert('Senha alterada!');document.getElementById('adm-newpwd').value='';
+}
+
+function openAdmin(btn){
+  pendingAdminBtn=btn;
+  document.getElementById('pwd-inp').value='';
+  document.getElementById('pwd-err').style.display='none';
+  document.getElementById('pwd-overlay').classList.add('show');
+  setTimeout(()=>document.getElementById('pwd-inp').focus(),100);
+}
+
+function checkPwd(){
+  const v=document.getElementById('pwd-inp').value;
+  if(v===getPwd()){
+    document.getElementById('pwd-overlay').classList.remove('show');
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('visible'));
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.getElementById('page-admin').classList.add('visible');
+    if(pendingAdminBtn)pendingAdminBtn.classList.add('active');
+  } else {
+    document.getElementById('pwd-err').style.display='block';
+    document.getElementById('pwd-inp').value='';
+  }
+}
+
+function showPage(name,btn){
+  if(name==='admin'){openAdmin(btn);return;}
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('visible'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('visible');
+  btn.classList.add('active');
+}
+
+function celebrate(em,title,text){
+  document.getElementById('cel-em').textContent=em;
+  document.getElementById('cel-title').textContent=title;
+  document.getElementById('cel-text').textContent=text;
+  document.getElementById('cel').classList.add('show');
+  launchConfetti();
+}
+
+function closeCel(){document.getElementById('cel').classList.remove('show');}
+
+function launchConfetti(){
+  const colors=['#FFD600','#FF6D00','#66bb6a','#2e7d32','#ffffff','#FF5252','#42A5F5'];
+  for(let i=0;i<100;i++){
+    const el=document.createElement('div');
+    el.className='conf';
+    el.style.cssText=`left:${Math.random()*100}vw;width:${5+Math.random()*9}px;height:${7+Math.random()*12}px;background:${colors[Math.floor(Math.random()*colors.length)]};animation-duration:${2+Math.random()*2.5}s;animation-delay:${Math.random()*0.8}s;`;
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(),5000);
+  }
+}
+
+// Fechar pwd com ESC
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.getElementById('pwd-overlay').classList.remove('show');});
+
+// Fade up toast animation
+const st=document.createElement('style');
+st.textContent='@keyframes fadeUp{0%{opacity:0;transform:translateX(-50%) translateY(20px);}15%{opacity:1;transform:translateX(-50%) translateY(0);}85%{opacity:1;}100%{opacity:0;transform:translateX(-50%) translateY(-10px);}}';
+document.head.appendChild(st);
+
+initData();
+updateUI();
+setInterval(updateUI,60000);
+window.addEventListener('resize',updateUI);
+</script>
+</body>
+</html>
