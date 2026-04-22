@@ -474,6 +474,23 @@ function getDaysLeft(){
 
 function fmt(n){return Math.round(n).toLocaleString('pt-BR');}
 
+const GIST_URL = 'https://gist.githubusercontent.com/mathdiasp/1b502400050ce2de35b0d6eabfb8c74f/raw/kle-missao.json';
+
+async function fetchGist(){
+  try{
+    const res = await fetch(GIST_URL + '?t=' + Date.now());
+    if(!res.ok) throw new Error('fetch failed');
+    const data = await res.json();
+    if(typeof data.kits === 'number' && data.kits !== kits){
+      kits = data.kits;
+      sv('kle_kits4', kits);
+      updateUI(true);
+    }
+  } catch(e){
+    console.warn('Gist fetch falhou, usando localStorage:', e);
+  }
+}
+
 function initData(){
   const s=ld('kle_kits4');if(s){kits=parseInt(s)||0;displayedKits=kits;}
   const p270=ld('kle_p270');if(p270){document.getElementById('ms-270-prize').textContent=p270;document.getElementById('adm-p270').value=p270;}
@@ -661,7 +678,9 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')document.getElementB
 
 initData();
 updateUI(false);
-setInterval(updateUI,60000);
+fetchGist();
+setInterval(fetchGist, 5 * 60 * 1000);
+setInterval(updateUI, 60000);
 window.addEventListener('resize',()=>setTimeout(updateUI,100));
 </script>
 </body>
