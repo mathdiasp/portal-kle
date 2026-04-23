@@ -358,9 +358,6 @@ function loadFile(f){
 }
 
 async function processFile(rows,fn){
-  await tokenReady;
-  if(!GITHUB_TOKEN){
-  }
   if(!rows.length)return;
   const s=rows[0];
   const cM=findCol(s,'MES'),cA=findCol(s,'ANO'),cP=findCol(s,'PMR EFETIVO');
