@@ -314,10 +314,9 @@ const VM={
 const COM=new Set(Object.keys(VM));
 
 // ── GITHUB STORAGE ──
-const GITHUB_REPO   = 'mathdiasp/portal-kle';
-const GITHUB_FILE   = 'antecipados-data.json';
-const GITHUB_BRANCH = 'main';
-const DATA_URL      = ()=>`https://raw.githubusercontent.com/${GITHUB_REPO}/${GITHUB_BRANCH}/${GITHUB_FILE}?t=${Date.now()}`;
+const GIST_ID   = 'f75610c784ccff5fe5b8b484c230cd70';
+const GIST_FILE = 'antecipados-data.json';
+const DATA_URL  = ()=>`https://gist.githubusercontent.com/mathdiasp/${GIST_ID}/raw/${GIST_FILE}?t=${Date.now()}`;
 let GITHUB_TOKEN='';
 const tokenReady=fetch('https://raw.githubusercontent.com/mathdiasp/portal-kle/main/config.json?t='+Date.now())
   .then(r=>r.ok?r.json():Promise.reject())
@@ -574,25 +573,17 @@ async function saveToGitHub(data){
       return;
     }
     document.getElementById('tsLabel').textContent=data.fileName+' · sincronizando...';
-    if(!GITHUB_TOKEN){document.getElementById('tsLabel').textContent=data.fileName+' · erro: token não configurado';return;}
-    let sha='';
-    const check=await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${GITHUB_FILE}`,{
-      headers:{'Authorization':'token '+GITHUB_TOKEN,'Accept':'application/vnd.github.v3+json'}
-    });
-    if(check.ok){const j=await check.json();sha=j.sha||'';}
-    const body={message:'update: antecipados-data '+new Date().toISOString(),
-      content:btoa(unescape(encodeURIComponent(JSON.stringify(data)))),branch:GITHUB_BRANCH};
-    if(sha)body.sha=sha;
-    const res=await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${GITHUB_FILE}`,{
-      method:'PUT',
+    const res=await fetch(`https://api.github.com/gists/${GIST_ID}`,{
+      method:'PATCH',
       headers:{'Authorization':'token '+GITHUB_TOKEN,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},
-      body:JSON.stringify(body)
+      body:JSON.stringify({files:{[GIST_FILE]:{content:JSON.stringify(data)}}})
     });
     if(res.ok){
       document.getElementById('tsLabel').textContent=data.fileName+' · '+data.savedAt+' ✓ sincronizado';
     } else {
-      console.warn('GitHub save failed',res.status);
-      document.getElementById('tsLabel').textContent=data.fileName+' · salvo localmente';
+      const err=await res.json().catch(()=>({}));
+      console.warn('Gist save failed',res.status,err);
+      document.getElementById('tsLabel').textContent=data.fileName+' · erro '+res.status+': '+JSON.stringify(err.message||'');
     }
   }catch(e){console.warn('saveToGitHub error',e);}
 }
