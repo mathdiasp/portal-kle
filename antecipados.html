@@ -317,9 +317,13 @@ const GITHUB_REPO   = 'mathdiasp/portal-kle';
 const GITHUB_FILE   = 'antecipados-data.json';
 const GITHUB_BRANCH = 'main';
 const DATA_URL      = ()=>`https://raw.githubusercontent.com/${GITHUB_REPO}/${GITHUB_BRANCH}/${GITHUB_FILE}?t=${Date.now()}`;
-let GITHUB_TOKEN = '';
 // Carregar token do config.json (arquivo local, não versionado)
-fetch('/config.json').then(r=>r.json()).then(cfg=>{GITHUB_TOKEN=cfg.gh_token||'';}).catch(()=>{});
+// Carregar token do config.json como promise
+let GITHUB_TOKEN='';
+const tokenReady=fetch('https://raw.githubusercontent.com/mathdiasp/portal-kle/main/config.json?t='+Date.now())
+  .then(r=>r.ok?r.json():Promise.reject())
+  .then(cfg=>{GITHUB_TOKEN=cfg.gh_token||'';})
+  .catch(()=>{console.warn('config.json não encontrado');});
 const INICIO=new Date('2026-04-01');
 
 let RAW=[],D=[],chart=null;
@@ -552,6 +556,8 @@ function renderChart(){
 
 async function saveToGitHub(data){
   try{
+    await tokenReady;
+    if(!GITHUB_TOKEN){document.getElementById('tsLabel').textContent=data.fileName+' · erro: token não configurado';return;}
     let sha='';
     const check=await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${GITHUB_FILE}`,{
       headers:{'Authorization':'token '+GITHUB_TOKEN,'Accept':'application/vnd.github.v3+json'}
@@ -575,7 +581,7 @@ async function saveToGitHub(data){
 }
 
 async function loadFromGitHub(){
-  const res=await fetch(DATA_URL());
+  const res=await fetch(DATA_URL()); // leitura pública, não precisa de token
   if(!res.ok)throw new Error('no data');
   const data=await res.json();
   loadParsed(data);
