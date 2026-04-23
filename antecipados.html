@@ -350,12 +350,12 @@ function findCol(sample,target){const t=normKey(target);return Object.keys(sampl
 function loadFile(f){
   if(!f)return;
   const r=new FileReader();
-  r.onload=e=>{
+  r.onload=async e=>{
     try{
       const wb=XLSX.read(e.target.result,{type:'array',cellDates:true});
       const sn=wb.SheetNames.find(s=>s.includes('CR - Contas a Receber')&&!s.includes('2')&&!s.includes('('));
       if(!sn){alert('Aba "CR - Contas a Receber" não encontrada.');return;}
-      processFile(XLSX.utils.sheet_to_json(wb.Sheets[sn],{defval:null}),f.name);
+      await processFile(XLSX.utils.sheet_to_json(wb.Sheets[sn],{defval:null}),f.name);
     }catch(err){alert('Erro: '+err.message);}
   };
   r.readAsArrayBuffer(f);
@@ -569,6 +569,11 @@ function renderChart(){
 async function saveToGitHub(data){
   try{
     await tokenReady;
+    if(!GITHUB_TOKEN){
+      document.getElementById('tsLabel').textContent=data.fileName+' · erro: token não configurado';
+      return;
+    }
+    document.getElementById('tsLabel').textContent=data.fileName+' · sincronizando...';
     if(!GITHUB_TOKEN){document.getElementById('tsLabel').textContent=data.fileName+' · erro: token não configurado';return;}
     let sha='';
     const check=await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${GITHUB_FILE}`,{
