@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -318,19 +317,16 @@ const COM=new Set(Object.keys(VM));
 const GIST_ID   = 'f75610c784ccff5fe5b8b484c230cd70';
 const GIST_FILE = 'antecipados-data.json';
 const DATA_URL  = ()=>`https://api.github.com/gists/${GIST_ID}?t=${Date.now()}`;
-let GITHUB_TOKEN='';
-const tokenReady=fetch('https://raw.githubusercontent.com/mathdiasp/portal-kle/main/config.json?t='+Date.now())
-  .then(r=>r.ok?r.json():Promise.reject())
-  .then(cfg=>{
-    GITHUB_TOKEN=cfg.gh_token||'';
-    const el=document.getElementById('tokenStatus');
-    if(el)el.innerHTML=GITHUB_TOKEN?'<span style="color:var(--green-dark);">✓ conectado</span>':'<span style="color:var(--red);">✗ token vazio</span>';
-  })
-  .catch(()=>{
-    console.warn('config.json não encontrado');
-    const el=document.getElementById('tokenStatus');
-    if(el)el.innerHTML='<span style="color:var(--red);">✗ config.json não encontrado</span>';
-  });
+// token gerenciado pela Vercel — sem exposição no frontend
+const tokenReady=Promise.resolve();
+// verificar conectividade com a API
+fetch('/api/gist').then(r=>{
+  const el=document.getElementById('tokenStatus');
+  if(el)el.innerHTML=r.ok?'<span style="color:var(--green-dark);">✓ conectado</span>':'<span style="color:var(--red);">✗ erro de conexão</span>';
+}).catch(()=>{
+  const el=document.getElementById('tokenStatus');
+  if(el)el.innerHTML='<span style="color:var(--red);">✗ sem conexão</span>';
+});
 const INICIO=new Date('2026-04-01');
 
 let RAW=[],D=[],chart=null;
@@ -364,8 +360,6 @@ function loadFile(f){
 async function processFile(rows,fn){
   await tokenReady;
   if(!GITHUB_TOKEN){
-    alert('Token não configurado. Verifique o config.json no GitHub.');
-    return;
   }
   if(!rows.length)return;
   const s=rows[0];
@@ -568,35 +562,29 @@ function renderChart(){
 
 async function saveToGitHub(data){
   try{
-    await tokenReady;
-    if(!GITHUB_TOKEN){
-      document.getElementById('tsLabel').textContent=data.fileName+' · erro: token não configurado';
-      return;
-    }
     document.getElementById('tsLabel').textContent=data.fileName+' · sincronizando...';
-    const res=await fetch(`https://api.github.com/gists/${GIST_ID}`,{
-      method:'PATCH',
-      headers:{'Authorization':'token '+GITHUB_TOKEN,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},
-      body:JSON.stringify({files:{[GIST_FILE]:{content:JSON.stringify(data)}}})
+    const res=await fetch('/api/gist',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(data)
     });
     if(res.ok){
       document.getElementById('tsLabel').textContent=data.fileName+' · '+data.savedAt+' ✓ sincronizado';
     } else {
       const err=await res.json().catch(()=>({}));
-      console.warn('Gist save failed',res.status,err);
-      document.getElementById('tsLabel').textContent=data.fileName+' · erro '+res.status+': '+JSON.stringify(err.message||'');
+      console.warn('save failed',res.status,err);
+      document.getElementById('tsLabel').textContent=data.fileName+' · erro ao sincronizar ('+res.status+')';
     }
-  }catch(e){console.warn('saveToGitHub error',e);}
+  }catch(e){
+    console.warn('saveToGitHub error',e);
+    document.getElementById('tsLabel').textContent=data.fileName+' · salvo localmente';
+  }
 }
 
 async function loadFromGitHub(){
-  const res=await fetch(DATA_URL());
+  const res=await fetch('/api/gist');
   if(!res.ok)throw new Error('no data');
-  const gist=await res.json();
-  // extrair conteúdo do arquivo dentro do Gist
-  const fileContent=gist.files&&gist.files[GIST_FILE]&&gist.files[GIST_FILE].content;
-  if(!fileContent)throw new Error('arquivo vazio');
-  const data=JSON.parse(fileContent);
+  const data=await res.json();
   if(!data.raw||!data.raw.length)throw new Error('sem dados');
   loadParsed(data);
 }
