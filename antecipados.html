@@ -207,7 +207,13 @@ main{max-width:1200px;margin:0 auto;padding:24px;}
       <div class="adm-grid">
 
         <div class="card">
-          <div class="card-title">📂 Upload do arquivo</div>
+          <div class="card-title" style="justify-content:space-between;">
+            <span>📂 Upload do arquivo</span>
+            <button class="nbtn" id="btnClearCache" onclick="clearCache()" style="display:none;font-size:.7rem;padding:3px 8px;">🗑 Limpar cache</button>
+          </div>
+          <div id="cacheInfo" style="display:none;margin-bottom:10px;background:var(--green-light);border-radius:var(--r-sm);padding:6px 10px;font-size:.75rem;color:var(--green-dark);font-weight:600;">
+            💾 Dados do último carregamento disponíveis
+          </div>
           <label class="up" id="uploadZone">
             <span class="up-icon">📊</span>
             <p><strong>Clique para fazer upload</strong> ou arraste</p>
@@ -262,11 +268,42 @@ main{max-width:1200px;margin:0 auto;padding:24px;}
 </div>
 
 <script>
+// ── VERIFICAR CACHE AO CARREGAR ──
+(function(){
+  const saved=localStorage.getItem('kle_ant_data');
+  if(saved){
+    document.getElementById('btnClearCache').style.display='block';
+    document.getElementById('cacheInfo').style.display='block';
+  }
+})();
+
 // ── LOGIN ──
 function doLogin(){
   if(document.getElementById('loginPwd').value==='kle2026'){
     document.getElementById('loginScreen').style.display='none';
     document.getElementById('app').style.display='block';
+    // Se já tem dados salvos, abre direto no painel
+    const saved=localStorage.getItem('kle_ant_data');
+    if(saved){
+      try{
+        const parsed=JSON.parse(saved);
+        RAW=parsed.raw;
+        D=[];
+        document.getElementById('uploadStatusText').textContent=parsed.fileName+' · '+parsed.count+' pedidos antecipados';
+        document.getElementById('uploadStatus').classList.add('show');
+        document.getElementById('tsLabel').textContent=parsed.fileName+' · salvo '+parsed.savedAt;
+        document.getElementById('btnVerPainel').style.display='block';
+        document.getElementById('adm-info-card').style.display='block';
+        // popular filtro de meses
+        const meses=[...new Set(RAW.map(r=>r.mes))].sort((a,b)=>a-b);
+        const sel=document.getElementById('filterMes');
+        sel.innerHTML='<option value="">Todos os meses</option>'+meses.map(m=>`<option value="${m}">Mês ${m}</option>`).join('');
+        if(meses.length)sel.value=String(meses[meses.length-1]);
+        applyFilters();
+        // abrir direto no painel
+        showTab('dash',document.querySelectorAll('.tab')[1]);
+      }catch(e){localStorage.removeItem('kle_ant_data');}
+    }
   } else {
     document.getElementById('loginErr').style.display='block';
     document.getElementById('loginPwd').value='';
@@ -347,9 +384,14 @@ function processFile(rows,fn){
 
   document.getElementById('uploadStatus').classList.add('show');
   document.getElementById('uploadStatusText').textContent=`${fn} · ${RAW.length} pedidos antecipados`;
-  document.getElementById('tsLabel').textContent=`${fn}`;
+  const savedAt=new Date().toLocaleString('pt-BR');
+  document.getElementById('tsLabel').textContent=`${fn} · salvo ${savedAt}`;
   document.getElementById('btnVerPainel').style.display='block';
   document.getElementById('adm-info-card').style.display='block';
+  // Salvar no localStorage
+  try{
+    localStorage.setItem('kle_ant_data',JSON.stringify({raw:RAW,fileName:fn,count:RAW.length,savedAt}));
+  }catch(e){console.warn('localStorage cheio, não foi possível salvar.');}
   applyFilters();
 }
 
@@ -515,6 +557,19 @@ function renderChart(){
       }
     }
   });
+}
+
+function clearCache(){
+  localStorage.removeItem('kle_ant_data');
+  RAW=[];D=[];
+  document.getElementById('btnClearCache').style.display='none';
+  document.getElementById('cacheInfo').style.display='none';
+  document.getElementById('uploadStatus').classList.remove('show');
+  document.getElementById('tsLabel').textContent='Nenhum arquivo carregado';
+  document.getElementById('btnVerPainel').style.display='none';
+  document.getElementById('adm-info-card').style.display='none';
+  document.getElementById('dash-content').innerHTML='<div class="empty"><div class="empty-icon">📋</div><p>Faça upload do arquivo na aba Administração.</p></div>';
+  showTab('adm',document.querySelectorAll('.tab')[0]);
 }
 </script>
 </body>
