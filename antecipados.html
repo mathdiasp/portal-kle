@@ -313,11 +313,13 @@ const VM={
 const COM=new Set(Object.keys(VM));
 
 // ── GITHUB STORAGE ──
-const GITHUB_TOKEN  = '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';
 const GITHUB_REPO   = 'mathdiasp/portal-kle';
 const GITHUB_FILE   = 'antecipados-data.json';
 const GITHUB_BRANCH = 'main';
 const DATA_URL      = ()=>`https://raw.githubusercontent.com/${GITHUB_REPO}/${GITHUB_BRANCH}/${GITHUB_FILE}?t=${Date.now()}`;
+let GITHUB_TOKEN = '';
+// Carregar token do config.json (arquivo local, não versionado)
+fetch('/config.json').then(r=>r.json()).then(cfg=>{GITHUB_TOKEN=cfg.gh_token||'';}).catch(()=>{});
 const INICIO=new Date('2026-04-01');
 
 let RAW=[],D=[],chart=null;
