@@ -1,10 +1,8 @@
 {
-  "routes": [
-    { "src": "/api/(.*)", "dest": "/api/$1" },
-    { "src": "/antecipados", "dest": "/antecipados.html" },
-    { "src": "/financeiro", "dest": "/financeiro.html" },
-    { "src": "/painel", "dest": "/painel.html" },
-    { "src": "/kle-missao-kits", "dest": "/kle-missao-kits.html" },
-    { "src": "/", "dest": "/index.html" }
+  "rewrites": [
+    { "source": "/antecipados", "destination": "/antecipados.html" },
+    { "source": "/financeiro", "destination": "/financeiro.html" },
+    { "source": "/painel", "destination": "/painel.html" },
+    { "source": "/kle-missao-kits", "destination": "/kle-missao-kits.html" }
   ]
 }
