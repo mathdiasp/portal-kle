@@ -1,0 +1,43 @@
+const GIST_ID   = 'f75610c784ccff5fe5b8b484c230cd70';
+const GIST_FILE = 'antecipados-data.json';
+const TOKEN     = process.env.GH_TOKEN;
+
+export default async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') return res.status(200).end();
+
+  const headers = {
+    'Authorization': `token ${TOKEN}`,
+    'Accept': 'application/vnd.github.v3+json',
+    'Content-Type': 'application/json',
+  };
+
+  // GET — leitura
+  if (req.method === 'GET') {
+    const r = await fetch(`https://api.github.com/gists/${GIST_ID}`, { headers });
+    if (!r.ok) return res.status(r.status).json({ error: 'Gist read failed' });
+    const gist = await r.json();
+    const content = gist.files?.[GIST_FILE]?.content;
+    if (!content) return res.status(404).json({ error: 'File not found in gist' });
+    return res.status(200).json(JSON.parse(content));
+  }
+
+  // POST — escrita
+  if (req.method === 'POST') {
+    const data = req.body;
+    const body = { files: { [GIST_FILE]: { content: JSON.stringify(data) } } };
+    const r = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+      method: 'PATCH', headers, body: JSON.stringify(body)
+    });
+    if (!r.ok) {
+      const err = await r.json().catch(() => ({}));
+      return res.status(r.status).json({ error: err.message || 'Gist write failed' });
+    }
+    return res.status(200).json({ ok: true });
+  }
+
+  return res.status(405).json({ error: 'Method not allowed' });
+}
