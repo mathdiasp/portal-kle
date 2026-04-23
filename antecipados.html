@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Campanha Antecipados — KLE</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --green:       #0F6E56;
+    --green-mid:   #1D9E75;
+    --green-light: #E1F5EE;
+    --green-text:  #085041;
+    --blue:        #185FA5;
+    --blue-mid:    #378ADD;
+    --blue-light:  #E6F1FB;
+    --blue-text:   #0C447C;
+    --amber:       #854F0B;
+    --amber-mid:   #BA7517;
+    --amber-light: #FAEEDA;
+    --amber-text:  #633806;
+    --red-light:   #FCEBEB;
+    --red-text:    #791F1F;
+    --bg:          #F7F6F3;
+    --surface:     #FFFFFF;
+    --border:      rgba(0,0,0,0.08);
+    --text:        #1A1A18;
+    --muted:       #6B6B67;
+    --radius:      12px;
+    --radius-sm:   8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .page-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+  }
+  .logo {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: .08em;
+    color: var(--green);
+    text-transform: uppercase;
+  }
+  .page-header nav a {
+    font-size: 13px;
+    color: var(--muted);
+    text-decoration: none;
+    margin-left: 1.5rem;
+  }
+  .page-header nav a.active { color: var(--text); font-weight: 500; }
+
+  /* ── MAIN ── */
+  .main { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.75rem 2rem;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .hero-title { font-size: 22px; font-weight: 600; line-height: 1.2; }
+  .hero-sub { font-size: 14px; color: var(--muted); margin-top: 6px; }
+  .hero-rule {
+    background: var(--green-light);
+    border-radius: var(--radius-sm);
+    padding: .65rem 1rem;
+    font-size: 13px;
+    color: var(--green-text);
+    line-height: 1.6;
+    flex-shrink: 0;
+    max-width: 300px;
+  }
+  .hero-rule strong { font-weight: 600; }
+
+  /* ── UPLOAD ZONE ── */
+  .upload-zone {
+    border: 1.5px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color .2s, background .2s;
+    margin-bottom: 1.25rem;
+    background: var(--surface);
+  }
+  .upload-zone:hover, .upload-zone.drag { border-color: var(--green-mid); background: var(--green-light); }
+  .upload-zone .upload-icon { font-size: 28px; margin-bottom: .5rem; }
+  .upload-zone p { font-size: 14px; color: var(--muted); }
+  .upload-zone strong { color: var(--green); }
+  .upload-zone input { display: none; }
+  .upload-status {
+    display: none;
+    align-items: center;
+    gap: .5rem;
+    font-size: 13px;
+    color: var(--green-text);
+    background: var(--green-light);
+    border-radius: var(--radius-sm);
+    padding: .5rem .85rem;
+    margin-bottom: 1.25rem;
+  }
+  .upload-status.show { display: flex; }
+  .upload-status .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green-mid); flex-shrink: 0; }
+
+  /* ── MONTH TABS ── */
+  .month-bar {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+  }
+  .month-btn {
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all .15s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .month-btn:hover { border-color: var(--green-mid); color: var(--green); }
+  .month-btn.active { background: var(--green-mid); color: #fff; border-color: var(--green-mid); }
+
+  /* ── KPI CARDS ── */
+  .kpis {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 10px;
+    margin-bottom: 1.25rem;
+  }
+  .kpi {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 1rem 1.1rem;
+  }
+  .kpi-label { font-size: 12px; color: var(--muted); margin-bottom: 5px; }
+  .kpi-val { font-size: 22px; font-weight: 600; line-height: 1; }
+  .kpi-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .kpi.accent .kpi-val { color: var(--green); }
+
+  /* ── RANKING CARDS ── */
+  .ranking { display: flex; flex-direction: column; gap: 10px; margin-bottom: 1.25rem; }
+
+  .rank-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.1rem 1.25rem;
+    transition: border-color .2s;
+  }
+  .rank-card.first { border: 2px solid var(--green-mid); }
+
+  .rank-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .rank-pos {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--muted);
+    width: 20px;
+    flex-shrink: 0;
+  }
+  .avatar {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 600;
+    flex-shrink: 0;
+  }
+  .rank-info { flex: 1; }
+  .rank-name { font-size: 15px; font-weight: 500; }
+  .rockets { font-size: 15px; margin-top: 1px; letter-spacing: 1px; }
+  .pmr-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    font-family: 'DM Mono', monospace;
+  }
+  .rank-right { text-align: right; }
+  .rank-antecipado { font-size: 19px; font-weight: 600; }
+  .rank-antecipado.positive { color: var(--green); }
+  .rank-antecipado.zero { color: var(--muted); }
+  .rank-antecipado-label { font-size: 11px; color: var(--muted); }
+
+  /* bar */
+  .bar-section { margin-bottom: 10px; }
+  .bar-meta { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+  .bar-track { background: var(--bg); border-radius: 4px; height: 7px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 4px; transition: width .6s cubic-bezier(.4,0,.2,1); }
+
+  /* premio */
+  .premio-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+  }
+  .premio-label { font-size: 12px; color: var(--muted); }
+  .premio-val { font-size: 16px; font-weight: 600; color: var(--green); }
+  .premio-val.zero { color: var(--muted); font-weight: 400; font-size: 14px; }
+  .eligible-tag {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+  }
+  .eligible-tag.yes { background: var(--green-light); color: var(--green-text); }
+  .eligible-tag.no  { background: var(--bg); color: var(--muted); }
+
+  /* ── CHART ── */
+  .chart-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem 1.5rem;
+  }
+  .chart-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; flex-wrap: wrap; gap: .5rem; }
+  .chart-title { font-size: 14px; font-weight: 500; }
+  .chart-legend { display: flex; gap: 14px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--muted); }
+  .legend-dot { width: 9px; height: 9px; border-radius: 2px; flex-shrink: 0; }
+
+  /* ── EMPTY ── */
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--muted);
+    font-size: 14px;
+  }
+  .empty-state .big { font-size: 36px; margin-bottom: .75rem; }
+
+  /* ── FOOTER ── */
+  .footer-note {
+    font-size: 12px;
+    color: var(--muted);
+    text-align: center;
+    margin-top: 2rem;
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <span class="logo">Kit Lanche Express</span>
+  <nav>
+    <a href="/financeiro">Financeiro</a>
+    <a href="/antecipados" class="active">Antecipados</a>
+  </nav>
+</header>
+
+<div class="main">
+
+  <div class="hero">
+    <div>
+      <div class="hero-title">🚀 Campanha antecipados</div>
+      <div class="hero-sub">Ranking mensal · Premiação 2% sobre receita antecipada</div>
+    </div>
+    <div class="hero-rule">
+      <strong>Regra:</strong> pedidos com PMR &lt; 0 (pagamento antes da entrega) geram premiação de <strong>2% sobre o total antecipado do mês</strong>.
+    </div>
+  </div>
+
+  <label class="upload-zone" id="uploadZone">
+    <div class="upload-icon">📂</div>
+    <p><strong>Clique para fazer upload</strong> ou arraste o arquivo</p>
+    <p style="margin-top:4px;">Fluxo_de_Caixa_2025.xlsx · aba "CR - Contas a Receber"</p>
+    <input type="file" id="fileInput" accept=".xlsx,.xls">
+  </label>
+
+  <div class="upload-status" id="uploadStatus">
+    <span class="dot"></span>
+    <span id="uploadStatusText">Arquivo carregado</span>
+  </div>
+
+  <div id="dashboard" style="display:none;">
+    <div class="month-bar" id="monthBar"></div>
+    <div class="kpis" id="kpis"></div>
+    <div class="ranking" id="ranking"></div>
+    <div class="chart-card">
+      <div class="chart-header">
+        <span class="chart-title">Evolução mensal — receita antecipada</span>
+        <div class="chart-legend" id="chartLegend"></div>
+      </div>
+      <div style="position:relative;width:100%;height:220px;">
+        <canvas id="evolChart" role="img" aria-label="Evolução da receita antecipada por vendedor ao longo dos meses">Receita antecipada por vendedor por mês.</canvas>
+      </div>
+    </div>
+    <div class="footer-note">
+      Fonte: aba "CR - Contas a Receber" · Filtro: DATA RECEBIMENTO ≥ 01/04/2026 · Centro de Receita = EXPRESS · PMR Efetivo &lt; 0<br>
+      Atualizado em: <span id="updatedAt">—</span>
+    </div>
+  </div>
+
+  <div id="emptyState" class="empty-state" style="display:none;">
+    <div class="big">📋</div>
+    Nenhum dado antecipado encontrado neste mês.
+  </div>
+
+</div>
+
+<script>
+const VENDEDORES_MAP = {
+  'Fabiana Armelin':  { norm: 'Fabiana Armelin',  initials: 'FA', color: '#1D9E75', bg: '#E1F5EE', textColor: '#085041' },
+  'fabiana Armelin':  { norm: 'Fabiana Armelin',  initials: 'FA', color: '#1D9E75', bg: '#E1F5EE', textColor: '#085041' },
+  'Wendel Monteiro':  { norm: 'Wendel Monteiro',  initials: 'WM', color: '#378ADD', bg: '#E6F1FB', textColor: '#0C447C' },
+  'Wendel':           { norm: 'Wendel Monteiro',  initials: 'WM', color: '#378ADD', bg: '#E6F1FB', textColor: '#0C447C' },
+  'Douglas Silva':    { norm: 'Douglas Silva',     initials: 'DS', color: '#BA7517', bg: '#FAEEDA', textColor: '#633806' },
+  'Matheus Dias':     { norm: 'Matheus Dias',      initials: 'MD', color: '#888780', bg: '#F1EFE8', textColor: '#444441' },
+};
+
+const COMERCIAIS = new Set(Object.keys(VENDEDORES_MAP));
+
+let allData = [];
+let activeMes = null;
+let chartInstance = null;
+
+// ── UPLOAD ──
+const uploadZone = document.getElementById('uploadZone');
+const fileInput  = document.getElementById('fileInput');
+
+uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag'); });
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag'));
+uploadZone.addEventListener('drop', e => { e.preventDefault(); uploadZone.classList.remove('drag'); handleFile(e.dataTransfer.files[0]); });
+fileInput.addEventListener('change', e => handleFile(e.target.files[0]));
+
+function handleFile(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const wb = XLSX.read(e.target.result, { type: 'array', cellDates: true });
+      const sheetName = wb.SheetNames.find(s => s.includes('CR - Contas a Receber') && !s.includes('2') && !s.includes('('));
+      if (!sheetName) {
+        alert('Aba "CR - Contas a Receber" não encontrada. Verifique o arquivo.');
+        return;
+      }
+      const ws = wb.Sheets[sheetName];
+      const rows = XLSX.utils.sheet_to_json(ws, { defval: null });
+      processData(rows, file.name);
+    } catch(err) {
+      alert('Erro ao ler o arquivo: ' + err.message);
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function processData(rows, fileName) {
+  const CAMPANHA_INICIO = new Date('2026-04-01');
+
+  // Normalizar e filtrar
+  allData = rows
+    .filter(r => {
+      const ano = Number(r['ANO']);
+      const pmr = Number(r['PMR EFETIVO']);
+      const vendor = String(r['VENDEDOR'] || '').trim();
+      // DATA RECEBIMENTO >= 01/04/2026
+      let receb = r['DATA RECEBIMENTO'];
+      if (!receb) return false;
+      if (typeof receb === 'number') {
+        // serial Excel → JS date
+        receb = new Date(Math.round((receb - 25569) * 86400 * 1000));
+      } else {
+        receb = new Date(receb);
+      }
+      const centro = String(r['CENTRO DE RECEITA'] || '').trim().toUpperCase();
+      return ano === 2026 && pmr < 0 && COMERCIAIS.has(vendor) && receb >= CAMPANHA_INICIO && centro === 'EXPRESS';
+    })
+    .map(r => {
+      const vendor = String(r['VENDEDOR']).trim();
+      const meta = VENDEDORES_MAP[vendor];
+      return {
+        mes: Number(r['MÊS']),
+        vendedor: meta.norm,
+        valor: Number(r['VALOR TOTAL']) || 0,
+        pmr: Number(r['PMR EFETIVO']),
+        meta,
+      };
+    });
+
+  const statusEl = document.getElementById('uploadStatus');
+  statusEl.classList.add('show');
+  document.getElementById('uploadStatusText').textContent =
+    `${fileName} · ${allData.length} pedidos antecipados carregados`;
+  document.getElementById('updatedAt').textContent = new Date().toLocaleString('pt-BR');
+
+  // Descobrir meses disponíveis
+  const meses = [...new Set(allData.map(r => r.mes))].sort((a,b)=>a-b);
+  activeMes = meses[meses.length - 1] || 1;
+
+  renderMonthBar(meses);
+  renderDashboard();
+  document.getElementById('dashboard').style.display = 'block';
+}
+
+function renderMonthBar(meses) {
+  const bar = document.getElementById('monthBar');
+  bar.innerHTML = meses.map(m =>
+    `<button class="month-btn${m===activeMes?' active':''}" onclick="setMes(${m})">Mês ${m}</button>`
+  ).join('');
+}
+
+function setMes(m) {
+  activeMes = m;
+  document.querySelectorAll('.month-btn').forEach(b => {
+    b.classList.toggle('active', Number(b.textContent.replace('Mês ','')) === m);
+  });
+  renderDashboard();
+}
+
+function getMesData(mes) {
+  const rows = allData.filter(r => r.mes === mes);
+  // agrupar por vendedor
+  const map = {};
+  rows.forEach(r => {
+    if (!map[r.vendedor]) map[r.vendedor] = { vendedor: r.vendedor, meta: r.meta, ant: 0, count: 0, pmrSum: 0 };
+    map[r.vendedor].ant += r.valor;
+    map[r.vendedor].count++;
+    map[r.vendedor].pmrSum += r.pmr;
+  });
+  return Object.values(map).map(v => ({
+    ...v,
+    pmrMedio: v.count > 0 ? v.pmrSum / v.count : 0,
+    premio: v.ant * 0.02,
+  })).sort((a,b) => b.ant - a.ant);
+}
+
+function getAllMesData() {
+  const meses = [...new Set(allData.map(r => r.mes))].sort((a,b)=>a-b);
+  const vendedores = [...new Set(allData.map(r => r.vendedor))];
+  return { meses, vendedores };
+}
+
+function rockets(val) {
+  if (val <= 0) return '';
+  const n = Math.min(Math.ceil(val / 10000), 5);
+  return '🚀'.repeat(n);
+}
+
+function pmrBadge(pmr) {
+  const cls = pmr < -10 ? `background:#E1F5EE;color:#085041;`
+            : pmr < -3  ? `background:#E6F1FB;color:#0C447C;`
+            : `background:#FAEEDA;color:#633806;`;
+  return `<span class="pmr-badge" style="${cls}">${pmr.toFixed(1)} d</span>`;
+}
+
+function fmtBRL(v) {
+  return v.toLocaleString('pt-BR', { style:'currency', currency:'BRL', minimumFractionDigits: 2 });
+}
+function fmtK(v) {
+  return v >= 1000 ? 'R$ ' + (v/1000).toFixed(0) + 'k' : fmtBRL(v);
+}
+
+function renderDashboard() {
+  const vData = getMesData(activeMes);
+  const totalAnt  = vData.reduce((s,d) => s + d.ant, 0);
+  const totalPrem = vData.reduce((s,d) => s + d.premio, 0);
+  const totalFat  = allData.filter(r => r.mes === activeMes).reduce((s,r) => s + r.valor, 0);
+
+  // KPIs
+  document.getElementById('kpis').innerHTML = `
+    <div class="kpi accent">
+      <div class="kpi-label">Total antecipado</div>
+      <div class="kpi-val">${fmtK(totalAnt)}</div>
+      <div class="kpi-sub">mês ${activeMes} · 2026</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Premiação total</div>
+      <div class="kpi-val">${fmtBRL(totalPrem)}</div>
+      <div class="kpi-sub">2% sobre antecipado</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Pedidos antecipados</div>
+      <div class="kpi-val">${allData.filter(r=>r.mes===activeMes).length}</div>
+      <div class="kpi-sub">pedidos elegíveis</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Vendedores elegíveis</div>
+      <div class="kpi-val">${vData.filter(d=>d.ant>0).length}</div>
+      <div class="kpi-sub">de ${vData.length} ativos</div>
+    </div>
+  `;
+
+  // Ranking
+  if (vData.length === 0) {
+    document.getElementById('ranking').innerHTML = '';
+    document.getElementById('emptyState').style.display = 'block';
+    return;
+  }
+  document.getElementById('emptyState').style.display = 'none';
+
+  const maxAnt = vData[0].ant;
+  document.getElementById('ranking').innerHTML = vData.map((d, i) => {
+    const pct = maxAnt > 0 ? (d.ant / maxAnt) * 100 : 0;
+    const rkts = rockets(d.ant);
+    const isFirst = i === 0 && d.ant > 0;
+    return `
+    <div class="rank-card${isFirst ? ' first' : ''}">
+      <div class="rank-top">
+        <span class="rank-pos">${i === 0 && d.ant > 0 ? '🏆' : '#' + (i+1)}</span>
+        <div class="avatar" style="background:${d.meta.bg};color:${d.meta.textColor};">${d.meta.initials}</div>
+        <div class="rank-info">
+          <div class="rank-name">${d.vendedor}</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:3px;flex-wrap:wrap;">
+            ${pmrBadge(d.pmrMedio)}
+            ${rkts ? `<span class="rockets">${rkts}</span>` : ''}
+          </div>
+        </div>
+        <div class="rank-right">
+          <div class="rank-antecipado ${d.ant > 0 ? 'positive' : 'zero'}">${fmtK(d.ant)}</div>
+          <div class="rank-antecipado-label">${d.count} pedido${d.count!==1?'s':''}</div>
+        </div>
+      </div>
+      <div class="bar-section">
+        <div class="bar-meta">
+          <span>participação no antecipado</span>
+          <span>${maxAnt > 0 ? ((d.ant/maxAnt)*100).toFixed(0) : 0}%</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill" style="width:${pct}%;background:${d.meta.color};"></div>
+        </div>
+      </div>
+      <div class="premio-row">
+        <div>
+          <div class="premio-label">Premiação do mês ${rkts}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          ${d.ant > 0
+            ? `<span class="eligible-tag yes">elegível</span><span class="premio-val">${fmtBRL(d.premio)}</span>`
+            : `<span class="eligible-tag no">sem antecipado</span><span class="premio-val zero">—</span>`
+          }
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  renderChart();
+}
+
+function renderChart() {
+  const { meses, vendedores } = getAllMesData();
+  const vendColors = {
+    'Fabiana Armelin': '#1D9E75',
+    'Wendel Monteiro':  '#378ADD',
+    'Douglas Silva':    '#BA7517',
+    'Matheus Dias':     '#888780',
+  };
+
+  const datasets = vendedores.map(v => ({
+    label: v.split(' ')[0],
+    data: meses.map(m => {
+      const total = allData.filter(r => r.mes === m && r.vendedor === v).reduce((s,r)=>s+r.valor,0);
+      return total > 0 ? Math.round(total) : null;
+    }),
+    borderColor: vendColors[v] || '#888',
+    backgroundColor: vendColors[v] ? vendColors[v]+'22' : '#88888822',
+    borderWidth: 2,
+    pointRadius: 5,
+    pointHoverRadius: 7,
+    tension: 0.35,
+    fill: false,
+    spanGaps: false,
+  }));
+
+  // legend
+  document.getElementById('chartLegend').innerHTML = vendedores.map(v =>
+    `<span class="legend-item"><span class="legend-dot" style="background:${vendColors[v]||'#888'};"></span>${v.split(' ')[0]}</span>`
+  ).join('');
+
+  const ctx = document.getElementById('evolChart');
+  if (chartInstance) chartInstance.destroy();
+  chartInstance = new Chart(ctx, {
+    type: 'line',
+    data: { labels: meses.map(m => 'Mês ' + m), datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: c => ` ${c.dataset.label}: ${c.parsed.y !== null ? 'R$ ' + c.parsed.y.toLocaleString('pt-BR') : '—'}`
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          grid: { color: 'rgba(0,0,0,0.05)' },
+          ticks: { font: { size: 11, family: 'DM Mono' }, callback: v => 'R$ '+Math.round(v/1000)+'k' }
+        },
+        x: { grid: { display: false }, ticks: { font: { size: 12 } } }
+      }
+    }
+  });
+}
+</script>
+</body>
+</html>
