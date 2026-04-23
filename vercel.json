@@ -1,0 +1,10 @@
+{
+  "routes": [
+    { "src": "/api/(.*)", "dest": "/api/$1" },
+    { "src": "/antecipados", "dest": "/antecipados.html" },
+    { "src": "/financeiro", "dest": "/financeiro.html" },
+    { "src": "/painel", "dest": "/painel.html" },
+    { "src": "/kle-missao-kits", "dest": "/kle-missao-kits.html" },
+    { "src": "/", "dest": "/index.html" }
+  ]
+}
