@@ -22,6 +22,8 @@
   --r:10px;--r-sm:6px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+/* ── RESET ISOLADO DO PORTAL ── */
+*::before,*::after{content:none!important;}
 html{scroll-behavior:smooth;}
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.5;}
 
@@ -391,7 +393,7 @@ function renderDash(){
   const mes=document.getElementById('filterMes').value;
   const ano=document.getElementById('filterAno').value;
   const mesTxt=mes?`Mês ${mes} · ${ano}`:ano;
-  const mx=vd[0]?.ant||0;
+  const tTotal=vd.reduce((s,d)=>s+d.ant,0)||1;
 
   const kpis=`
   <div class="kgrid">
@@ -428,7 +430,7 @@ function renderDash(){
       <div class="rth right">Status</div>
     </div>
     ${vd.length?vd.map((d,i)=>{
-      const pct=mx>0?(d.ant/mx)*100:0;
+      const pct=tTotal>0?(d.ant/tTotal)*100:0;
       const rkts=rkt(d.ant);
       const isFirst=i===0&&d.ant>0;
       return `
