@@ -317,8 +317,8 @@ const GITHUB_REPO   = 'mathdiasp/portal-kle';
 const GITHUB_FILE   = 'antecipados-data.json';
 const GITHUB_BRANCH = 'main';
 const DATA_URL      = ()=>`https://raw.githubusercontent.com/${GITHUB_REPO}/${GITHUB_BRANCH}/${GITHUB_FILE}?t=${Date.now()}`;
+let GITHUB_TOKEN = '';
 // Carregar token do config.json (arquivo local, não versionado)
-// Carregar token do config.json como promise
 let GITHUB_TOKEN='';
 const tokenReady=fetch('https://raw.githubusercontent.com/mathdiasp/portal-kle/main/config.json?t='+Date.now())
   .then(r=>r.ok?r.json():Promise.reject())
@@ -581,7 +581,7 @@ async function saveToGitHub(data){
 }
 
 async function loadFromGitHub(){
-  const res=await fetch(DATA_URL()); // leitura pública, não precisa de token
+  const res=await fetch(DATA_URL());
   if(!res.ok)throw new Error('no data');
   const data=await res.json();
   loadParsed(data);
