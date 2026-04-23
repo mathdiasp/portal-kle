@@ -9,90 +9,177 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
-#kle-ant-root,#kle-ant-root *{box-sizing:border-box;margin:0;padding:0;font-family:'Nunito',sans-serif;}
-#kle-ant-root *::before,#kle-ant-root *::after{content:none!important;display:none!important;}
-html,body{background:#F4F3F0;min-height:100vh;}
-#kle-ant-root{--g:#0F6E56;--gm:#1D9E75;--gl:#E1F5EE;--gt:#085041;--bm:#378ADD;--bl:#E6F1FB;--bt:#0C447C;--am:#BA7517;--al:#FAEEDA;--at:#633806;--bg:#F4F3F0;--s:#fff;--bdr:rgba(0,0,0,0.09);--tx:#1A1A18;--mu:#6B6B67;--r:14px;--rs:8px;display:block;}
+/* ── RESET ISOLADO ── */
+#kle-root,#kle-root *{box-sizing:border-box;margin:0;padding:0;font-family:'Nunito',sans-serif;}
+#kle-root *::before,#kle-root *::after{content:none!important;display:none!important;}
+html,body{background:#F0EFEB;min-height:100vh;}
 
-.kh{background:var(--g);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:58px;}
+/* ── VARIÁVEIS ── */
+#kle-root{
+  --g:#0F6E56;--gm:#1D9E75;--gl:#E1F5EE;--gt:#085041;
+  --bm:#378ADD;--bl:#E6F1FB;--bt:#0C447C;
+  --am:#BA7517;--al:#FAEEDA;--at:#633806;
+  --gry:#888780;--gryl:#F1EFE8;--gryt:#444441;
+  --bg:#F0EFEB;--s:#fff;--bdr:rgba(0,0,0,0.09);
+  --tx:#1A1A18;--mu:#6B6B67;--r:10px;--rs:6px;
+  display:block;
+}
+
+/* ── LOGIN OVERLAY ── */
+#login-overlay{
+  position:fixed;inset:0;background:#F0EFEB;
+  display:flex;align-items:center;justify-content:center;
+  z-index:9999;
+}
+.login-box{
+  background:var(--s);border:1px solid var(--bdr);
+  border-radius:var(--r);padding:2.5rem 2rem;
+  width:340px;text-align:center;
+}
+.login-logo{
+  width:48px;height:48px;border-radius:10px;background:var(--g);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Bebas Neue',sans-serif;font-size:16px;color:#fff;
+  margin:0 auto 1rem;
+}
+.login-title{font-size:18px;font-weight:900;color:var(--tx);margin-bottom:.25rem;}
+.login-sub{font-size:13px;color:var(--mu);font-weight:600;margin-bottom:1.5rem;}
+.login-input{
+  width:100%;padding:.65rem 1rem;border:1.5px solid var(--bdr);
+  border-radius:var(--rs);font-size:14px;font-weight:600;
+  color:var(--tx);background:var(--bg);margin-bottom:.75rem;
+  font-family:'Nunito',sans-serif;
+}
+.login-input:focus{outline:none;border-color:var(--gm);}
+.login-btn{
+  width:100%;padding:.7rem;background:var(--g);color:#fff;
+  border:none;border-radius:var(--rs);font-size:14px;font-weight:800;
+  cursor:pointer;font-family:'Nunito',sans-serif;
+}
+.login-btn:hover{background:var(--gm);}
+.login-err{font-size:12px;color:#E24B4A;font-weight:700;margin-top:.5rem;display:none;}
+
+/* ── HEADER ── */
+.kh{background:var(--g);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:54px;}
 .kh-logo{display:flex;align-items:center;gap:10px;}
-.kh-badge{width:34px;height:34px;border-radius:8px;background:#fff;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:13px;color:var(--g);letter-spacing:1px;}
-.kh-name{font-family:'Bebas Neue',sans-serif;font-size:20px;color:#fff;letter-spacing:2px;}
-.kh-nav a{font-size:13px;font-weight:700;color:rgba(255,255,255,0.6);text-decoration:none;margin-left:1.5rem;}
-.kh-nav a.active{color:#fff;}
+.kh-badge{width:32px;height:32px;border-radius:7px;background:#fff;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:12px;color:var(--g);letter-spacing:1px;}
+.kh-name{font-family:'Bebas Neue',sans-serif;font-size:19px;color:#fff;letter-spacing:2px;}
+.kh-nav{display:flex;gap:6px;}
+.kh-tab{padding:6px 16px;border-radius:20px;font-size:12px;font-weight:800;cursor:pointer;color:rgba(255,255,255,0.65);background:transparent;border:1.5px solid rgba(255,255,255,0.2);font-family:'Nunito',sans-serif;}
+.kh-tab.active{background:rgba(255,255,255,0.18);color:#fff;border-color:rgba(255,255,255,0.4);}
+.kh-tab:hover{color:#fff;}
 
-.km{max-width:880px;margin:0 auto;padding:1.75rem 1.5rem 4rem;}
+/* ── PAGES ── */
+.kpage{display:none;max-width:900px;margin:0 auto;padding:1.5rem 1.5rem 4rem;}
+.kpage.active{display:block;}
 
-.hero{background:var(--g);border-radius:var(--r);padding:1.5rem 1.75rem;margin-bottom:1.25rem;display:flex;align-items:flex-start;justify-content:space-between;gap:1.5rem;flex-wrap:wrap;}
-.hero-t{font-size:24px;font-weight:900;color:#fff;line-height:1.15;}
-.hero-s{font-size:13px;color:rgba(255,255,255,0.7);margin-top:5px;font-weight:600;}
-.hero-rule{background:rgba(255,255,255,0.12);border-radius:var(--rs);padding:.65rem 1rem;font-size:13px;color:rgba(255,255,255,0.85);line-height:1.6;flex-shrink:0;max-width:280px;font-weight:600;}
-.hero-rule strong{color:#fff;font-weight:900;}
+/* ── ADM PAGE ── */
+.adm-section{margin-bottom:1.5rem;}
+.adm-section-title{font-size:11px;font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.6rem;}
 
-.up{background:var(--s);border:2px dashed rgba(29,158,117,0.35);border-radius:var(--r);padding:2rem;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;margin-bottom:1rem;}
+.up{background:var(--s);border:2px dashed rgba(29,158,117,0.35);border-radius:var(--r);padding:1.75rem;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;}
 .up:hover,.up.drag{border-color:var(--gm);background:var(--gl);}
-.up-icon{font-size:30px;margin-bottom:.5rem;display:block;}
-.up p{font-size:14px;color:var(--mu);font-weight:600;}
+.up-icon{font-size:28px;margin-bottom:.4rem;display:block;}
+.up p{font-size:13px;color:var(--mu);font-weight:600;}
 .up p span{color:var(--g);}
-.up small{font-size:12px;color:var(--mu);margin-top:3px;display:block;}
+.up small{font-size:12px;color:var(--mu);margin-top:2px;display:block;}
 .up input{display:none;}
 
-.st{display:none;align-items:center;gap:.5rem;font-size:13px;font-weight:700;color:var(--gt);background:var(--gl);border-radius:var(--rs);padding:.55rem 1rem;margin-bottom:1.25rem;}
+.st{display:none;align-items:center;gap:.5rem;font-size:13px;font-weight:700;color:var(--gt);background:var(--gl);border-radius:var(--rs);padding:.5rem .9rem;margin-top:.75rem;}
 .st.show{display:flex;}
-.st-dot{width:8px;height:8px;border-radius:50%;background:var(--gm);flex-shrink:0;}
+.st-dot{width:7px;height:7px;border-radius:50%;background:var(--gm);flex-shrink:0;}
 
-.months{display:flex;gap:6px;margin-bottom:1.25rem;flex-wrap:wrap;}
-.mbtn{padding:6px 18px;border-radius:20px;font-size:13px;font-weight:700;border:1.5px solid var(--bdr);background:var(--s);color:var(--mu);cursor:pointer;transition:all .15s;font-family:'Nunito',sans-serif;}
-.mbtn:hover{border-color:var(--gm);color:var(--g);}
-.mbtn.active{background:var(--gm);color:#fff;border-color:var(--gm);}
+.filter-row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;}
+.filter-group{display:flex;flex-direction:column;gap:4px;}
+.filter-label{font-size:11px;font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:.05em;}
+.filter-select{padding:.5rem .9rem;border:1.5px solid var(--bdr);border-radius:var(--rs);font-size:13px;font-weight:700;color:var(--tx);background:var(--s);font-family:'Nunito',sans-serif;cursor:pointer;}
+.filter-select:focus{outline:none;border-color:var(--gm);}
+.apply-btn{padding:.55rem 1.2rem;background:var(--g);color:#fff;border:none;border-radius:var(--rs);font-size:13px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;align-self:flex-end;}
+.apply-btn:hover{background:var(--gm);}
 
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:10px;margin-bottom:1.25rem;}
-.kpi{background:var(--s);border:1px solid var(--bdr);border-radius:var(--rs);padding:1rem 1.1rem;}
-.kpi-lbl{font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px;}
+.adm-info{background:var(--s);border:1px solid var(--bdr);border-radius:var(--r);padding:1rem 1.25rem;}
+.adm-info-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:4px 0;border-bottom:1px solid var(--bdr);}
+.adm-info-row:last-child{border-bottom:none;}
+.adm-info-key{font-weight:700;color:var(--mu);}
+.adm-info-val{font-weight:800;color:var(--tx);}
+.adm-info-val.green{color:var(--g);}
+
+/* ── DASH PAGE ── */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:1rem;}
+.kpi{background:var(--s);border:1px solid var(--bdr);border-radius:var(--r);padding:.9rem 1rem;}
+.kpi-lbl{font-size:10px;font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;}
 .kpi-val{font-size:22px;font-weight:900;line-height:1;color:var(--tx);}
-.kpi-sub{font-size:12px;color:var(--mu);margin-top:4px;font-weight:600;}
+.kpi-sub{font-size:11px;color:var(--mu);margin-top:3px;font-weight:600;}
 .kpi.acc .kpi-val{color:var(--g);}
 
-.ranking{display:flex;flex-direction:column;gap:10px;margin-bottom:1.25rem;}
-.rc{background:var(--s);border:1.5px solid var(--bdr);border-radius:var(--r);padding:1.1rem 1.25rem;}
-.rc.first{border:2px solid var(--gm);}
-.rt{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
-.rpos{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--mu);width:28px;flex-shrink:0;text-align:center;}
-.av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0;}
-.ri{flex:1;}
-.rn{font-size:15px;font-weight:800;color:var(--tx);}
-.rm{display:flex;align-items:center;gap:8px;margin-top:3px;flex-wrap:wrap;}
-.pb{display:inline-flex;align-items:center;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:800;}
-.rkt{font-size:14px;letter-spacing:1px;}
-.rr{text-align:right;}
-.rv{font-size:20px;font-weight:900;}
-.rv.pos{color:var(--g);}
-.rv.zero{color:var(--mu);}
-.rc-count{font-size:11px;color:var(--mu);font-weight:600;}
-.bm2{display:flex;justify-content:space-between;font-size:11px;font-weight:700;color:var(--mu);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em;}
-.bt{background:var(--bg);border-radius:4px;height:8px;overflow:hidden;}
-.bf{height:100%;border-radius:4px;transition:width .6s cubic-bezier(.4,0,.2,1);}
-.pr{display:flex;align-items:center;justify-content:space-between;padding-top:10px;margin-top:10px;border-top:1px solid var(--bdr);}
-.pl{font-size:12px;color:var(--mu);font-weight:700;}
-.prr{display:flex;align-items:center;gap:8px;}
-.tag{font-size:11px;padding:2px 8px;border-radius:4px;font-weight:800;}
+/* ── RANK CARD — estilo Pipedrive ── */
+.ranking{display:flex;flex-direction:column;gap:8px;margin-bottom:1rem;}
+.rc{background:var(--s);border:1px solid var(--bdr);border-radius:var(--r);overflow:hidden;}
+.rc.first{border-left:3px solid var(--gm);}
+.rc-top{display:flex;align-items:center;gap:0;padding:0;}
+
+/* pos strip */
+.rc-pos{width:44px;min-height:80px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--mu);background:var(--bg);border-right:1px solid var(--bdr);flex-shrink:0;}
+
+/* avatar */
+.rc-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0;margin:0 10px;}
+
+/* info */
+.rc-info{flex:1;padding:10px 0;}
+.rc-name{font-size:14px;font-weight:800;color:var(--tx);line-height:1.2;}
+.rc-meta{display:flex;align-items:center;gap:6px;margin-top:3px;flex-wrap:wrap;}
+.pb{display:inline-flex;align-items:center;padding:1px 8px;border-radius:20px;font-size:10px;font-weight:800;}
+.rkt{font-size:13px;letter-spacing:1px;}
+
+/* numbers */
+.rc-nums{padding:10px 14px;text-align:right;border-left:1px solid var(--bdr);min-width:110px;}
+.rc-val{font-size:18px;font-weight:900;}
+.rc-val.pos{color:var(--g);}
+.rc-val.zero{color:var(--mu);}
+.rc-count{font-size:10px;color:var(--mu);font-weight:700;}
+.rc-prem{font-size:13px;font-weight:800;color:var(--g);}
+.rc-prem.zero{color:var(--mu);font-weight:600;font-size:12px;}
+.rc-prem-lbl{font-size:10px;color:var(--mu);font-weight:600;}
+
+/* progress bar inside card */
+.rc-bar{height:3px;background:var(--bg);}
+.rc-bar-fill{height:100%;transition:width .6s cubic-bezier(.4,0,.2,1);}
+
+/* ── CHART CARD ── */
+.cc{background:var(--s);border:1px solid var(--bdr);border-radius:var(--r);padding:1rem 1.25rem;margin-bottom:1rem;}
+.cc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.85rem;flex-wrap:wrap;gap:.5rem;}
+.cc-title{font-size:11px;font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;}
+.leg{display:flex;gap:12px;flex-wrap:wrap;}
+.li{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--mu);font-weight:700;}
+.ld{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
+
+/* ── FOOTER ── */
+.ft{font-size:11px;color:var(--mu);text-align:center;margin-top:1.5rem;line-height:1.7;font-weight:600;}
+
+/* ── TAG ── */
+.tag{font-size:10px;padding:2px 7px;border-radius:3px;font-weight:800;}
 .tag.yes{background:var(--gl);color:var(--gt);}
 .tag.no{background:var(--bg);color:var(--mu);}
-.pv{font-size:17px;font-weight:900;color:var(--g);}
-.pv.zero{color:var(--mu);font-size:14px;font-weight:600;}
 
-.cc{background:var(--s);border:1px solid var(--bdr);border-radius:var(--r);padding:1.25rem 1.5rem;margin-bottom:1.25rem;}
-.ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem;}
-.ct{font-size:13px;font-weight:800;color:var(--tx);text-transform:uppercase;letter-spacing:.04em;}
-.leg{display:flex;gap:14px;flex-wrap:wrap;}
-.li{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--mu);font-weight:700;}
-.ld{width:9px;height:9px;border-radius:2px;flex-shrink:0;}
-
-.ft{font-size:12px;color:var(--mu);text-align:center;margin-top:2rem;line-height:1.7;font-weight:600;}
+.empty{text-align:center;padding:2.5rem 1rem;color:var(--mu);font-size:13px;font-weight:600;}
+.empty .big{font-size:32px;margin-bottom:.5rem;}
 </style>
 </head>
 <body>
-<div id="kle-ant-root">
+
+<!-- LOGIN -->
+<div id="login-overlay">
+  <div class="login-box">
+    <div class="login-logo">KLE</div>
+    <div class="login-title">Campanha Antecipados</div>
+    <div class="login-sub">Kit Lanche Express · Acesso restrito</div>
+    <input class="login-input" type="password" id="loginPwd" placeholder="Senha" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()">Entrar</button>
+    <div class="login-err" id="loginErr">Senha incorreta</div>
+  </div>
+</div>
+
+<div id="kle-root" style="display:none;">
 
 <header class="kh">
   <div class="kh-logo">
@@ -100,59 +187,86 @@ html,body{background:#F4F3F0;min-height:100vh;}
     <span class="kh-name">Kit Lanche Express</span>
   </div>
   <nav class="kh-nav">
-    <a href="/financeiro">Financeiro</a>
-    <a href="/antecipados" class="active">Antecipados</a>
+    <button class="kh-tab active" onclick="showPage('adm',this)">⚙ Administração</button>
+    <button class="kh-tab" onclick="showPage('dash',this)">📊 Painel</button>
   </nav>
 </header>
 
-<div class="km">
-  <div class="hero">
-    <div>
-      <div class="hero-t">🚀 Campanha antecipados</div>
-      <div class="hero-s">Ranking mensal · Express · A partir de 01/04/2026</div>
-    </div>
-    <div class="hero-rule">
-      PMR &lt; 0 = pagamento antes da entrega.<br>
-      Premiação: <strong>2% sobre o total antecipado do mês.</strong>
+<!-- ADM PAGE -->
+<div id="page-adm" class="kpage active">
+
+  <div class="adm-section">
+    <div class="adm-section-title">Upload do arquivo</div>
+    <label class="up" id="uploadZone">
+      <span class="up-icon">📂</span>
+      <p><span>Clique para fazer upload</span> ou arraste o arquivo</p>
+      <small>Fluxo_de_Caixa_2025.xlsx · aba "CR - Contas a Receber"</small>
+      <input type="file" id="fileInput" accept=".xlsx,.xls">
+    </label>
+    <div class="st" id="uploadStatus">
+      <span class="st-dot"></span>
+      <span id="uploadStatusText"></span>
     </div>
   </div>
 
-  <label class="up" id="uploadZone">
-    <span class="up-icon">📂</span>
-    <p><span>Clique para fazer upload</span> ou arraste o arquivo</p>
-    <small>Fluxo_de_Caixa_2025.xlsx · aba "CR - Contas a Receber"</small>
-    <input type="file" id="fileInput" accept=".xlsx,.xls">
-  </label>
-
-  <div class="st" id="uploadStatus">
-    <span class="st-dot"></span>
-    <span id="uploadStatusText"></span>
+  <div class="adm-section">
+    <div class="adm-section-title">Filtros</div>
+    <div class="filter-row">
+      <div class="filter-group">
+        <span class="filter-label">Mês</span>
+        <select class="filter-select" id="filterMes">
+          <option value="">Todos os meses</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <span class="filter-label">Ano</span>
+        <select class="filter-select" id="filterAno">
+          <option value="2026">2026</option>
+          <option value="2025">2025</option>
+        </select>
+      </div>
+      <button class="apply-btn" onclick="applyFilters()">Aplicar filtros ↗</button>
+    </div>
   </div>
 
-  <div id="dashboard" style="display:none;">
-    <div class="months" id="monthBar"></div>
-    <div class="kpis" id="kpis"></div>
-    <div class="ranking" id="ranking"></div>
-    <div class="cc">
-      <div class="ch">
-        <span class="ct">Evolução — receita antecipada</span>
-        <div class="leg" id="chartLegend"></div>
-      </div>
-      <div style="position:relative;width:100%;height:220px;">
-        <canvas id="evolChart" role="img" aria-label="Evolução receita antecipada por vendedor">Receita antecipada por vendedor por mês.</canvas>
-      </div>
-    </div>
-    <div class="ft">
-      Fonte: aba "CR - Contas a Receber" · DATA RECEBIMENTO ≥ 01/04/2026 · CENTRO DE RECEITA = EXPRESS · PMR EFETIVO &lt; 0<br>
-      Atualizado em: <span id="updatedAt">—</span>
-    </div>
+  <div class="adm-section" id="adm-info-section" style="display:none;">
+    <div class="adm-section-title">Resumo do arquivo</div>
+    <div class="adm-info" id="adm-info"></div>
+  </div>
+
+</div>
+
+<!-- DASH PAGE -->
+<div id="page-dash" class="kpage">
+  <div id="dash-content">
+    <div class="empty"><div class="big">📋</div>Faça upload do arquivo na aba Administração.</div>
   </div>
 </div>
-</div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+</div><!-- #kle-root -->
+
 <script>
+// ── SENHA ──
+function doLogin(){
+  const v=document.getElementById('loginPwd').value;
+  if(v==='kle2026'){
+    document.getElementById('login-overlay').style.display='none';
+    document.getElementById('kle-root').style.display='block';
+  } else {
+    document.getElementById('loginErr').style.display='block';
+    document.getElementById('loginPwd').value='';
+  }
+}
+
+// ── ABAS ──
+function showPage(id,btn){
+  document.querySelectorAll('.kpage').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.kh-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ── DADOS ──
 const VM={
   'Fabiana Armelin':{norm:'Fabiana Armelin',i:'FA',c:'#1D9E75',bg:'#E1F5EE',tc:'#085041'},
   'fabiana Armelin':{norm:'Fabiana Armelin',i:'FA',c:'#1D9E75',bg:'#E1F5EE',tc:'#085041'},
@@ -163,18 +277,24 @@ const VM={
 };
 const COM=new Set(Object.keys(VM));
 const INICIO=new Date('2026-04-01');
-let D=[],mes=null,chart=null;
 
+let RAW=[];    // todos os registros normalizados (sem filtro de mês)
+let D=[];      // registros filtrados pelo filtro ativo
+let chart=null;
+
+// ── UPLOAD ──
 const uz=document.getElementById('uploadZone');
 const fi=document.getElementById('fileInput');
 uz.addEventListener('dragover',e=>{e.preventDefault();uz.classList.add('drag');});
 uz.addEventListener('dragleave',()=>uz.classList.remove('drag'));
-uz.addEventListener('drop',e=>{e.preventDefault();uz.classList.remove('drag');load(e.dataTransfer.files[0]);});
-fi.addEventListener('change',e=>load(e.target.files[0]));
+uz.addEventListener('drop',e=>{e.preventDefault();uz.classList.remove('drag');loadFile(e.dataTransfer.files[0]);});
+fi.addEventListener('change',e=>loadFile(e.target.files[0]));
 
 function toD(v){if(!v)return null;if(v instanceof Date)return v;if(typeof v==='number')return new Date(Math.round((v-25569)*86400*1000));return new Date(v);}
+function normKey(k){return String(k).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().trim();}
+function findCol(sample,target){const t=normKey(target);return Object.keys(sample).find(k=>normKey(k)===t);}
 
-function load(f){
+function loadFile(f){
   if(!f)return;
   const r=new FileReader();
   r.onload=e=>{
@@ -183,115 +303,216 @@ function load(f){
       const sn=wb.SheetNames.find(s=>s.includes('CR - Contas a Receber')&&!s.includes('2')&&!s.includes('('));
       if(!sn){alert('Aba "CR - Contas a Receber" não encontrada.');return;}
       const rows=XLSX.utils.sheet_to_json(wb.Sheets[sn],{defval:null});
-      process(rows,f.name);
+      processFile(rows,f.name);
     }catch(err){alert('Erro: '+err.message);}
   };
   r.readAsArrayBuffer(f);
 }
 
-function normKey(k){return String(k).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().trim();}
-function findCol(r,target){const t=normKey(target);return Object.keys(r).find(k=>normKey(k)===t);}
-
-function process(rows,fn){
+function processFile(rows,fn){
   if(!rows.length){alert('Planilha vazia.');return;}
   const sample=rows[0];
-  const colMes   =findCol(sample,'MES')||'MES';
-  const colAno   =findCol(sample,'ANO')||'ANO';
-  const colPmr   =findCol(sample,'PMR EFETIVO')||'PMR EFETIVO';
-  const colVend  =findCol(sample,'VENDEDOR')||'VENDEDOR';
-  const colCentro=findCol(sample,'CENTRO DE RECEITA')||'CENTRO DE RECEITA';
-  const colRec   =findCol(sample,'DATA RECEBIMENTO')||'DATA RECEBIMENTO';
-  const colValor =findCol(sample,'VALOR TOTAL')||'VALOR TOTAL';
+  const cMes=findCol(sample,'MES');
+  const cAno=findCol(sample,'ANO');
+  const cPmr=findCol(sample,'PMR EFETIVO');
+  const cVend=findCol(sample,'VENDEDOR');
+  const cCentro=findCol(sample,'CENTRO DE RECEITA');
+  const cRec=findCol(sample,'DATA RECEBIMENTO');
+  const cVal=findCol(sample,'VALOR TOTAL');
 
-  D=rows.filter(r=>{
-    const ano=Number(r[colAno]),pmr=Number(r[colPmr]),v=String(r[colVend]||'').trim();
-    const centro=String(r[colCentro]||'').trim().toUpperCase();
-    const rec=toD(r[colRec]);
-    return ano===2026&&pmr<0&&COM.has(v)&&centro==='EXPRESS'&&rec&&rec>=INICIO;
+  RAW=rows.filter(r=>{
+    const pmr=Number(r[cPmr]),v=String(r[cVend]||'').trim();
+    const centro=String(r[cCentro]||'').trim().toUpperCase();
+    const rec=toD(r[cRec]);
+    return pmr<0&&COM.has(v)&&centro==='EXPRESS'&&rec&&rec>=INICIO;
   }).map(r=>{
-    const v=String(r[colVend]).trim(),m=VM[v];
-    const mesRaw=r[colMes];
+    const v=String(r[cVend]).trim(),m=VM[v];
+    const mesRaw=r[cMes];
     const mesNum=mesRaw instanceof Date?mesRaw.getMonth()+1:parseInt(String(mesRaw),10);
-    return{mes:mesNum,vendedor:m.norm,valor:Number(r[colValor])||0,pmr:Number(r[colPmr]),m};
+    const anoNum=Number(r[cAno]);
+    return{mes:mesNum,ano:anoNum,vendedor:m.norm,valor:Number(r[cVal])||0,pmr:Number(r[cPmr]),m};
   }).filter(r=>!isNaN(r.mes));
+
+  // popular filtro de meses
+  const meses=[...new Set(RAW.map(r=>r.mes))].sort((a,b)=>a-b);
+  const selMes=document.getElementById('filterMes');
+  selMes.innerHTML='<option value="">Todos os meses</option>'+meses.map(m=>`<option value="${m}">Mês ${m}</option>`).join('');
+  // default: último mês
+  if(meses.length) selMes.value=String(meses[meses.length-1]);
+
   document.getElementById('uploadStatus').classList.add('show');
-  document.getElementById('uploadStatusText').textContent=`${fn} · ${D.length} pedidos antecipados`;
-  document.getElementById('updatedAt').textContent=new Date().toLocaleString('pt-BR');
-  const meses=[...new Set(D.map(r=>r.mes))].sort((a,b)=>a-b);
-  mes=meses[meses.length-1]||4;
-  renderMonths(meses);
-  render();
-  document.getElementById('dashboard').style.display='block';
+  document.getElementById('uploadStatusText').textContent=`${fn} · ${RAW.length} pedidos antecipados encontrados`;
+  document.getElementById('adm-info-section').style.display='block';
+
+  applyFilters();
 }
 
-function renderMonths(meses){
-  document.getElementById('monthBar').innerHTML=meses.map(m=>
-    `<button class="mbtn${m===mes?' active':''}" onclick="setM(${m})">Mês ${m}</button>`
-  ).join('');
+function applyFilters(){
+  const mes=document.getElementById('filterMes').value;
+  const ano=document.getElementById('filterAno').value;
+  D=RAW.filter(r=>{
+    if(mes&&r.mes!==parseInt(mes))return false;
+    if(ano&&r.ano!==parseInt(ano))return false;
+    return true;
+  });
+
+  const mesTxt=mes?`Mês ${mes}`:'Todos';
+  document.getElementById('adm-info').innerHTML=`
+    <div class="adm-info-row"><span class="adm-info-key">Filtro ativo</span><span class="adm-info-val">${mesTxt} · ${ano}</span></div>
+    <div class="adm-info-row"><span class="adm-info-key">Pedidos elegíveis</span><span class="adm-info-val green">${D.length}</span></div>
+    <div class="adm-info-row"><span class="adm-info-key">Total antecipado</span><span class="adm-info-val green">${brl(D.reduce((s,r)=>s+r.valor,0))}</span></div>
+    <div class="adm-info-row"><span class="adm-info-key">Premiação estimada</span><span class="adm-info-val">${brl(D.reduce((s,r)=>s+r.valor,0)*0.02)}</span></div>
+    <div class="adm-info-row"><span class="adm-info-key">Atualizado em</span><span class="adm-info-val">${new Date().toLocaleString('pt-BR')}</span></div>
+  `;
+  renderDash();
 }
 
-window.setM=m=>{
-  mes=m;
-  document.querySelectorAll('.mbtn').forEach(b=>b.classList.toggle('active',Number(b.textContent.replace('Mês ',''))===m));
-  render();
+// ── FORMATAÇÃO ──
+const brl=v=>v.toLocaleString('pt-BR',{style:'currency',currency:'BRL',minimumFractionDigits:2,maximumFractionDigits:2});
+const fk=v=>brl(v); // sempre 2 casas decimais
+
+// ── FOGUETES ──
+const rkt=v=>{if(v<=0)return '';return '🚀'.repeat(Math.min(Math.ceil(v/10000),5));};
+
+// ── BADGE PMR ──
+const pb=p=>{
+  const s=p<-10?'background:#E1F5EE;color:#085041':p<-3?'background:#E6F1FB;color:#0C447C':'background:#FAEEDA;color:#633806';
+  return `<span class="pb" style="${s}">${p.toFixed(1)} d</span>`;
 };
 
-function gd(m){
+// ── RENDER DASH ──
+function renderDash(){
+  const vd=getVendData();
+  const tA=vd.reduce((s,d)=>s+d.ant,0);
+  const tP=tA*0.02;
+  const tN=D.length;
+  const selMes=document.getElementById('filterMes').value;
+  const selAno=document.getElementById('filterAno').value;
+  const mesTxt=selMes?`Mês ${selMes} · ${selAno}`:selAno;
+
+  const html=`
+    <div class="kpis">
+      <div class="kpi acc">
+        <div class="kpi-lbl">Total antecipado</div>
+        <div class="kpi-val">${fk(tA)}</div>
+        <div class="kpi-sub">${mesTxt}</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-lbl">Premiação total</div>
+        <div class="kpi-val">${fk(tP)}</div>
+        <div class="kpi-sub">2% sobre antecipado</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-lbl">Pedidos elegíveis</div>
+        <div class="kpi-val">${tN}</div>
+        <div class="kpi-sub">PMR &lt; 0 · Express</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-lbl">Vendedores</div>
+        <div class="kpi-val">${vd.filter(d=>d.ant>0).length}</div>
+        <div class="kpi-sub">elegíveis no período</div>
+      </div>
+    </div>
+    <div class="ranking">${renderRanking(vd)}</div>
+    <div class="cc">
+      <div class="cc-head">
+        <span class="cc-title">Evolução — receita antecipada por vendedor</span>
+        <div class="leg" id="chartLegend"></div>
+      </div>
+      <div style="position:relative;width:100%;height:210px;">
+        <canvas id="evolChart" role="img" aria-label="Evolução receita antecipada por vendedor">Receita antecipada por vendedor por mês.</canvas>
+      </div>
+    </div>
+    <div class="ft">
+      Fonte: aba "CR - Contas a Receber" · DATA RECEBIMENTO ≥ 01/04/2026 · CENTRO DE RECEITA = EXPRESS · PMR EFETIVO &lt; 0<br>
+      Atualizado em: <span id="updatedAt">${new Date().toLocaleString('pt-BR')}</span>
+    </div>
+  `;
+  document.getElementById('dash-content').innerHTML=html;
+  renderChart();
+}
+
+function getVendData(){
   const mp={};
-  D.filter(r=>r.mes===m).forEach(r=>{
+  D.forEach(r=>{
     if(!mp[r.vendedor])mp[r.vendedor]={vendedor:r.vendedor,m:r.m,ant:0,cnt:0,ps:0};
-    mp[r.vendedor].ant+=r.valor;mp[r.vendedor].cnt++;mp[r.vendedor].ps+=r.pmr;
+    mp[r.vendedor].ant+=r.valor;
+    mp[r.vendedor].cnt++;
+    mp[r.vendedor].ps+=r.pmr;
   });
   return Object.values(mp).map(v=>({...v,pmr:v.cnt>0?v.ps/v.cnt:0,premio:v.ant*.02})).sort((a,b)=>b.ant-a.ant);
 }
 
-const rkt=v=>{if(v<=0)return '';return '🚀'.repeat(Math.min(Math.ceil(v/10000),5));};
-const pb=p=>{const s=p<-10?'background:#E1F5EE;color:#085041':p<-3?'background:#E6F1FB;color:#0C447C':'background:#FAEEDA;color:#633806';return `<span class="pb" style="${s}">${p.toFixed(1)} d</span>`;};
-const brl=v=>v.toLocaleString('pt-BR',{style:'currency',currency:'BRL',minimumFractionDigits:2});
-const fk=v=>v>=1000?'R$ '+(v/1000).toFixed(0)+'k':brl(v);
-
-function render(){
-  const vd=gd(mes);
-  const tA=vd.reduce((s,d)=>s+d.ant,0),tP=vd.reduce((s,d)=>s+d.premio,0),tN=D.filter(r=>r.mes===mes).length;
-  document.getElementById('kpis').innerHTML=`
-    <div class="kpi acc"><div class="kpi-lbl">Total antecipado</div><div class="kpi-val">${fk(tA)}</div><div class="kpi-sub">mês ${mes} · 2026</div></div>
-    <div class="kpi"><div class="kpi-lbl">Premiação total</div><div class="kpi-val">${brl(tP)}</div><div class="kpi-sub">2% sobre antecipado</div></div>
-    <div class="kpi"><div class="kpi-lbl">Pedidos elegíveis</div><div class="kpi-val">${tN}</div><div class="kpi-sub">PMR &lt; 0 · Express</div></div>
-    <div class="kpi"><div class="kpi-lbl">Vendedores</div><div class="kpi-val">${vd.filter(d=>d.ant>0).length}</div><div class="kpi-sub">elegíveis este mês</div></div>`;
-  const mx=vd[0]?.ant||0;
-  document.getElementById('ranking').innerHTML=vd.map((d,i)=>{
-    const pct=mx>0?(d.ant/mx)*100:0,rk=rkt(d.ant),fi=i===0&&d.ant>0;
-    return `<div class="rc${fi?' first':''}">
-      <div class="rt">
-        <span class="rpos">${fi?'🏆':'#'+(i+1)}</span>
-        <div class="av" style="background:${d.m.bg};color:${d.m.tc};">${d.m.i}</div>
-        <div class="ri"><div class="rn">${d.vendedor}</div><div class="rm">${pb(d.pmr)}${rk?`<span class="rkt">${rk}</span>`:''}</div></div>
-        <div class="rr"><div class="rv ${d.ant>0?'pos':'zero'}">${fk(d.ant)}</div><div class="rc-count">${d.cnt} pedido${d.cnt!==1?'s':''}</div></div>
+function renderRanking(vd){
+  if(!vd.length)return '<div class="empty"><div class="big">📋</div>Nenhum dado antecipado no período.</div>';
+  const mx=vd[0].ant;
+  return vd.map((d,i)=>{
+    const pct=mx>0?(d.ant/mx)*100:0;
+    const rkts=rkt(d.ant);
+    const isFirst=i===0&&d.ant>0;
+    return `
+    <div class="rc${isFirst?' first':''}">
+      <div class="rc-top">
+        <div class="rc-pos">${isFirst?'🏆':'#'+(i+1)}</div>
+        <div class="rc-av" style="background:${d.m.bg};color:${d.m.tc};">${d.m.i}</div>
+        <div class="rc-info">
+          <div class="rc-name">${d.vendedor}</div>
+          <div class="rc-meta">${pb(d.pmr)}${rkts?`<span class="rkt">${rkts}</span>`:''}</div>
+          <div class="rc-meta" style="margin-top:4px;">
+            ${d.ant>0?`<span class="tag yes">elegível</span>`:' <span class="tag no">sem antecipado</span>'}
+            <span style="font-size:10px;color:var(--mu);font-weight:700;">${d.cnt} pedido${d.cnt!==1?'s':''}</span>
+          </div>
+        </div>
+        <div class="rc-nums">
+          <div class="rc-val ${d.ant>0?'pos':'zero'}">${fk(d.ant)}</div>
+          <div class="rc-prem-lbl">premiação</div>
+          <div class="rc-prem ${d.ant>0?'':'zero'}">${d.ant>0?fk(d.premio):'—'}</div>
+        </div>
       </div>
-      <div><div class="bm2"><span>participação</span><span>${mx>0?((d.ant/mx)*100).toFixed(0):0}%</span></div>
-      <div class="bt"><div class="bf" style="width:${pct}%;background:${d.ant>0?d.m.c:'#ccc'};"></div></div></div>
-      <div class="pr"><div class="pl">Premiação ${rk}</div>
-      <div class="prr">${d.ant>0?`<span class="tag yes">elegível</span><span class="pv">${brl(d.premio)}</span>`:`<span class="tag no">sem antecipado</span><span class="pv zero">—</span>`}</div></div>
+      <div class="rc-bar"><div class="rc-bar-fill" style="width:${pct}%;background:${d.ant>0?d.m.c:'#ccc'};"></div></div>
     </div>`;
   }).join('');
-  renderChart();
 }
 
 function renderChart(){
-  const meses=[...new Set(D.map(r=>r.mes))].sort((a,b)=>a-b);
-  const vens=[...new Set(D.map(r=>r.vendedor))];
+  const meses=[...new Set(RAW.map(r=>r.mes))].sort((a,b)=>a-b);
+  const vens=[...new Set(RAW.map(r=>r.vendedor))];
   const vc={'Fabiana Armelin':'#1D9E75','Wendel Monteiro':'#378ADD','Douglas Silva':'#BA7517','Matheus Dias':'#888780'};
+
+  const selAno=parseInt(document.getElementById('filterAno').value)||2026;
   const datasets=vens.map(v=>({
     label:v.split(' ')[0],
-    data:meses.map(m=>{const t=D.filter(r=>r.mes===m&&r.vendedor===v).reduce((s,r)=>s+r.valor,0);return t>0?Math.round(t):null;}),
-    borderColor:vc[v]||'#888',backgroundColor:(vc[v]||'#888')+'22',
-    borderWidth:2.5,pointRadius:5,pointHoverRadius:7,tension:0.35,fill:false,spanGaps:false,
+    data:meses.map(m=>{
+      const t=RAW.filter(r=>r.mes===m&&r.ano===selAno&&r.vendedor===v).reduce((s,r)=>s+r.valor,0);
+      return t>0?parseFloat(t.toFixed(2)):null;
+    }),
+    borderColor:vc[v]||'#888',
+    backgroundColor:(vc[v]||'#888')+'18',
+    borderWidth:2,pointRadius:4,pointHoverRadius:6,
+    tension:0.35,fill:false,spanGaps:false,
   }));
-  document.getElementById('chartLegend').innerHTML=vens.map(v=>
-    `<span class="li"><span class="ld" style="background:${vc[v]||'#888'};"></span>${v.split(' ')[0]}</span>`).join('');
+
+  const legEl=document.getElementById('chartLegend');
+  if(legEl)legEl.innerHTML=vens.map(v=>`<span class="li"><span class="ld" style="background:${vc[v]||'#888'};"></span>${v.split(' ')[0]}</span>`).join('');
+
   const ctx=document.getElementById('evolChart');
+  if(!ctx)return;
   if(chart)chart.destroy();
-  chart=new Chart(ctx,{type:'line',data:{labels:meses.map(m=>'Mês '+m),datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${c.parsed.y!==null?'R$ '+c.parsed.y.toLocaleString('pt-BR'):'—'}`}}},scales:{y:{beginAtZero:true,grid:{color:'rgba(0,0,0,0.05)'},ticks:{font:{size:11,family:'Nunito',weight:'700'},callback:v=>'R$ '+Math.round(v/1000)+'k'}},x:{grid:{display:false},ticks:{font:{size:12,family:'Nunito',weight:'700'}}}}}});
+  chart=new Chart(ctx,{
+    type:'line',
+    data:{labels:meses.map(m=>'Mês '+m),datasets},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${c.parsed.y!==null?brl(c.parsed.y):'—'}`}}
+      },
+      scales:{
+        y:{beginAtZero:true,grid:{color:'rgba(0,0,0,0.05)'},ticks:{font:{size:11,family:'Nunito',weight:'700'},callback:v=>brl(v)}},
+        x:{grid:{display:false},ticks:{font:{size:11,family:'Nunito',weight:'700'}}}
+      }
+    }
+  });
 }
 </script>
 </body>
