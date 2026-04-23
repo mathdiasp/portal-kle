@@ -1,13 +1,16 @@
 const GIST_ID   = 'f75610c784ccff5fe5b8b484c230cd70';
 const GIST_FILE = 'antecipados-data.json';
-const TOKEN     = process.env.GH_TOKEN;
 
 export default async function handler(req, res) {
+  const TOKEN = process.env.GH_TOKEN || process.env.GITHUB_TOKEN;
+
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') return res.status(200).end();
+
+  if (!TOKEN) return res.status(500).json({ error: 'Token não configurado' });
 
   const headers = {
     'Authorization': `token ${TOKEN}`,
@@ -15,22 +18,21 @@ export default async function handler(req, res) {
     'Content-Type': 'application/json',
   };
 
-  // GET — leitura
   if (req.method === 'GET') {
     const r = await fetch(`https://api.github.com/gists/${GIST_ID}`, { headers });
     if (!r.ok) return res.status(r.status).json({ error: 'Gist read failed' });
     const gist = await r.json();
     const content = gist.files?.[GIST_FILE]?.content;
-    if (!content) return res.status(404).json({ error: 'File not found in gist' });
+    if (!content || content === '{}') return res.status(404).json({ error: 'Sem dados' });
     return res.status(200).json(JSON.parse(content));
   }
 
-  // POST — escrita
   if (req.method === 'POST') {
     const data = req.body;
-    const body = { files: { [GIST_FILE]: { content: JSON.stringify(data) } } };
     const r = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
-      method: 'PATCH', headers, body: JSON.stringify(body)
+      method: 'PATCH',
+      headers,
+      body: JSON.stringify({ files: { [GIST_FILE]: { content: JSON.stringify(data) } } })
     });
     if (!r.ok) {
       const err = await r.json().catch(() => ({}));
